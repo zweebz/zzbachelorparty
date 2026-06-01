@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
     
+    <!-- Dynamic Basketball Emoji Favicon to clear the 404 warning -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏀</text></svg>">
+    
     <!-- Suppress Tailwind Production Warn Console Message -->
     <script>
         (function() {
@@ -390,10 +393,10 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Unique path identifier for database separation (RULE 1)
+        // Unique path identifier for database separation
         const appId = 'zzbachelorcup';
         
-        // Custom keys preloaded from survey image configurations
+        // Custom keys loaded from your Firebase console
         const firebaseConfig = {
             apiKey: "AIzaSyAd97W7fjRXHqtljXPdkzs4xRMiSePRvs4",
             authDomain: "zzbachelorcup.firebaseapp.com",
@@ -443,7 +446,7 @@
         const playerSkills = {
             "Big Stacks": { "Pool": 4, "Air Hockey": 4, "Foosball": 3, "Darts": 3, "Volleyball": 3, "Beer Pong": 4, "Flip Cup": 4, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
             "Zach Zweibel": { "Pool": 5, "Air Hockey": 3, "Foosball": 2, "Darts": 4, "Volleyball": 2, "Beer Pong": 4, "Flip Cup": 5, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
-            "David": { "Pool": 2, "Air Hockey": 4, "Foosball": 4, "Darts": 4, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 4, "Midnight Cannonball": 1, "Cannonball": 1, "Cornhole": 3, "Smash": 1 },
+            "David": { "Pool": 2, "Air Hockey": 4, "Foosball": 4, "Darts": 4, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 4, "Cannonball": 1, "Cornhole": 3, "Smash": 1 },
             "Salah Balawi": { "Pool": 3, "Air Hockey": 3, "Foosball": 2, "Darts": 3, "Volleyball": 2, "Beer Pong": 2, "Flip Cup": 1, "Cannonball": 3, "Cornhole": 3, "Smash": 2 },
             "Alex McKeen": { "Pool": 4, "Air Hockey": 2, "Foosball": 1, "Darts": 3, "Volleyball": 2, "Beer Pong": 4, "Flip Cup": 1, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
             "Stephan": { "Pool": 5, "Air Hockey": 3, "Foosball": 2, "Darts": 1, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 3, "Midnight Cannonball": 3, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
@@ -623,7 +626,7 @@
             document.getElementById('sync-dot').className = "inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]";
             document.getElementById('sync-status').innerText = `Synced to MSG (User: ${currentUser.uid.substring(0, 8)})`;
 
-            // 1. Teams Sync (RULE 1 & 2)
+            // 1. Teams Sync
             const teamsCol = collection(db, 'artifacts', appId, 'public', 'data', 'teams');
             onSnapshot(teamsCol, (snapshot) => {
                 if (snapshot.empty) {
@@ -1247,7 +1250,7 @@
         }
 
         function renderBracketUI() {
-            const getTeamHtml = (teamId, sideSelected, callbackString, label) => {
+            const getTeamHtml = (teamId, sideSelected, onclickAction, label) => {
                 const t = teams.find(team => team.id === teamId);
                 if (!t) {
                     return `
@@ -1260,7 +1263,7 @@
                 const checkedIcon = (sideSelected === teamId) ? '<i class="fa-solid fa-circle-check text-knicks-orange text-sm"></i>' : '<div class="w-4 h-4 rounded-full border border-slate-700"></div>';
 
                 return `
-                    <div onclick="${callbackString}(${teamId})" class="p-3 border rounded-xl flex justify-between items-center cursor-pointer transition-all ${activeBorder}">
+                    <div onclick="${onclickAction}" class="p-3 border rounded-xl flex justify-between items-center cursor-pointer transition-all ${activeBorder}">
                         <div class="flex items-center gap-2">
                             <span class="text-sm">${t.badge}</span>
                             <span class="text-xs text-slate-200">${t.name.split(' ').pop()}</span>
@@ -1273,41 +1276,44 @@
                 `;
             };
 
+            // Semifinals
             document.getElementById('semi-1-card').innerHTML = `
                 <div class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-2">Game 1: Semifinal 1</div>
                 <div class="space-y-2">
-                    ${getTeamHtml(bracketState.semi1.t1, bracketState.semi1.winner, 'selectSemiWinner.bind(null, 1)', 'Seed 1')}
-                    ${getTeamHtml(bracketState.semi1.t2, bracketState.semi1.winner, 'selectSemiWinner.bind(null, 1)', 'Seed 4')}
+                    ${getTeamHtml(bracketState.semi1.t1, bracketState.semi1.winner, `selectSemiWinner(1, ${bracketState.semi1.t1})`, 'Seed 1')}
+                    ${getTeamHtml(bracketState.semi1.t2, bracketState.semi1.winner, `selectSemiWinner(1, ${bracketState.semi1.t2})`, 'Seed 4')}
                 </div>
             `;
 
             document.getElementById('semi-2-card').innerHTML = `
                 <div class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-2">Game 2: Semifinal 2</div>
                 <div class="space-y-2">
-                    ${getTeamHtml(bracketState.semi2.t1, bracketState.semi2.winner, 'selectSemiWinner.bind(null, 2)', 'Seed 2')}
-                    ${getTeamHtml(bracketState.semi2.t2, bracketState.semi2.winner, 'selectSemiWinner.bind(null, 2)', 'Seed 3')}
+                    ${getTeamHtml(bracketState.semi2.t1, bracketState.semi2.winner, `selectSemiWinner(2, ${bracketState.semi2.t1})`, 'Seed 2')}
+                    ${getTeamHtml(bracketState.semi2.t2, bracketState.semi2.winner, `selectSemiWinner(2, ${bracketState.semi2.t2})`, 'Seed 3')}
                 </div>
             `;
 
+            // Game 4: Championship Match
             document.getElementById('championship-card').innerHTML = `
                 <div class="text-[10px] font-extrabold uppercase text-yellow-500 tracking-wider mb-2 flex items-center justify-between">
                     <span>👑 Game 4: Championship</span>
                     <span class="bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded-full text-[8px]">1st & 2nd Place</span>
                 </div>
                 <div class="space-y-2">
-                    ${getTeamHtml(bracketState.championship.t1, bracketState.championship.winner, 'selectFinalsWinner.bind(null, "championship")', 'Winners')}
-                    ${getTeamHtml(bracketState.championship.t2, bracketState.championship.winner, 'selectFinalsWinner.bind(null, "championship")', 'Winners')}
+                    ${getTeamHtml(bracketState.championship.t1, bracketState.championship.winner, `selectFinalsWinner('championship', ${bracketState.championship.t1})`, 'Winners')}
+                    ${getTeamHtml(bracketState.championship.t2, bracketState.championship.winner, `selectFinalsWinner('championship', ${bracketState.championship.t2})`, 'Winners')}
                 </div>
             `;
 
+            // Game 3: Consolation Match
             document.getElementById('consolation-card').innerHTML = `
                 <div class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider mb-2 flex items-center justify-between">
                     <span>🥉 Game 3: Consolation Match</span>
                     <span class="bg-white/5 text-slate-300 px-2 py-0.5 rounded-full text-[8px]">3rd & 4th Place</span>
                 </div>
                 <div class="space-y-2">
-                    ${getTeamHtml(bracketState.consolation.t1, bracketState.consolation.winner, 'selectFinalsWinner.bind(null, "consolation")', 'Losers')}
-                    ${getTeamHtml(bracketState.consolation.t2, bracketState.consolation.winner, 'selectFinalsWinner.bind(null, "consolation")', 'Losers')}
+                    ${getTeamHtml(bracketState.consolation.t1, bracketState.consolation.winner, `selectFinalsWinner('consolation', ${bracketState.consolation.t1})`, 'Losers')}
+                    ${getTeamHtml(bracketState.consolation.t2, bracketState.consolation.winner, `selectFinalsWinner('consolation', ${bracketState.consolation.t2})`, 'Losers')}
                 </div>
             `;
 
