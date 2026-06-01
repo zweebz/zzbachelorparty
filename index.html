@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
+    
+    <!-- Suppress Tailwind Production Warn Console Message -->
+    <script>
+        (function() {
+            const originalWarn = console.warn;
+            console.warn = function(...args) {
+                if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) {
+                    return;
+                }
+                originalWarn.apply(console, args);
+            };
+        })();
+    </script>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Sports Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        // Custom Tailwind Config to integrate the official New York Knicks color scheme
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'knicks-blue': '#006BB6',
+                        'knicks-orange': '#F58426',
+                        'knicks-dark': '#0B0E14',
+                        'knicks-accent': '#1d273a',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Modern Glassmorphic effects & custom glow indicators */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .knicks-glow-orange {
+            box-shadow: 0 0 20px rgba(245, 132, 38, 0.3);
+        }
+        .knicks-glow-blue {
+            box-shadow: 0 0 20px rgba(0, 107, 182, 0.3);
+        }
+        body {
+            background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0b0f17 100%);
+        }
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(245, 132, 38, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(245, 132, 38, 0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 font-sans pb-12 overflow-x-hidden">
+
+    <!-- Toast Container for Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <!-- Custom Glassmorphic Confirmation Dialog Modal -->
+    <div id="custom-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-panel max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-rose-500/30 knicks-glow-orange transform transition-transform duration-300 scale-100">
+            <div class="flex items-center gap-3 text-rose-500 mb-3">
+                <div class="p-2 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                </div>
+                <h3 class="font-extrabold text-base text-white uppercase tracking-wider">Wipe Roster Scores?</h3>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-6">
+                This will reset all team points, total wins, and wipe the tournament activity feed history completely. This action cannot be undone.
+            </p>
+            <div class="flex gap-2.5">
+                <button onclick="cancelReset()" class="flex-1 py-2.5 rounded-xl border border-slate-800 hover:bg-white/5 text-xs font-bold text-slate-400 transition-all">
+                    Cancel
+                </button>
+                <button onclick="executeReset()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-extrabold text-white uppercase tracking-widest transition-all shadow-lg shadow-rose-950">
+                    Confirm Wipe
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MSG Header Section -->
+    <header class="bg-knicks-dark border-b border-slate-800 shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-knicks-blue/10 to-knicks-orange/10 opacity-60"></div>
+        <div class="max-w-6xl mx-auto px-4 py-6 relative z-10 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex items-center gap-4">
+                <div class="bg-gradient-to-br from-knicks-orange to-knicks-blue p-2.5 rounded-2xl shadow-lg shadow-knicks-orange/10">
+                    <i class="fa-solid fa-trophy text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight font-display text-white">
+                        ZZ BACHELOR <span class="text-knicks-orange">CUP</span> 2026
+                    </h1>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span id="sync-dot" class="inline-block w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span>
+                        <p id="sync-status" class="text-xs text-slate-400 font-sans font-semibold">Connecting to MSG Courts...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Buttons Container -->
+            <div class="flex bg-slate-950 p-1.5 rounded-2xl border border-slate-800/80 w-full md:w-auto md:min-w-[420px] gap-1">
+                <button id="tab-btn-leaderboard" onclick="setTab('leaderboard')" class="flex-1">
+                    <i class="fa-solid fa-chart-line"></i> Scoreboard
+                </button>
+                <button id="tab-btn-teams" onclick="setTab('teams')" class="flex-1">
+                    <i class="fa-solid fa-users"></i> Teams
+                </button>
+                <button id="tab-btn-drinks" onclick="setTab('drinks')" class="flex-1">
+                    <i class="fa-solid fa-beer-mug-empty"></i> Drinks Guide
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Views Container -->
+    <main class="max-w-6xl mx-auto px-4 mt-8 relative">
+
+        <!-- Tab 1: Leaderboard View -->
+        <section id="view-leaderboard" class="space-y-8">
+            
+            <!-- Real-time Scoreboard Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div id="scoreboard-grid" class="contents"></div>
+            </div>
+
+            <!-- MSG Arena Interactive Bracket Tournament Arena -->
+            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                <div class="absolute inset-0 bg-radial-gradient(circle at 100% 100%, rgba(0, 107, 182, 0.04) 0%, transparent 60%) pointer-events-none"></div>
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="p-1.5 bg-knicks-orange/10 border border-knicks-orange/20 rounded-lg">
+                                <i class="fa-solid fa-sitemap text-knicks-orange"></i>
+                            </span>
+                            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Interactive 4-Game Tournament Bracket</h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">Determine 1st through 4th places dynamically. Choose winners to advance teams.</p>
+                    </div>
+
+                    <!-- Event Picker -->
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <span class="text-xs text-slate-400 font-bold uppercase whitespace-nowrap">Event:</span>
+                        <select id="bracket-event-type" onchange="resetBracketState()" class="bg-slate-950 border border-slate-800 text-xs rounded-xl px-4 py-2.5 text-slate-200 outline-none focus:border-knicks-orange w-full md:w-56">
+                            <option value="Beer Pong 🍺">Beer Pong 🍺</option>
+                            <option value="Pool (8-Ball) 🎱">Pool (8-Ball) 🎱</option>
+                            <option value="Super Smash Bros. 🎮">Super Smash Bros. 🎮</option>
+                            <option value="Flip Cup 🥤">Flip Cup 🥤</option>
+                            <option value="Volleyball 🏐">Volleyball 🏐</option>
+                            <option value="Cornhole 🌽">Cornhole 🌽</option>
+                            <option value="Foosball ⚽">Foosball ⚽</option>
+                            <option value="Darts 🎯">Darts 🎯</option>
+                            <option value="Air Hockey 🥏">Air Hockey 🥏</option>
+                            <option value="Midnight Cannonball 💣">Midnight Cannonball 💣</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Live Seeding Performance Banner -->
+                <div id="live-seeding-banner" class="mb-4 p-3.5 bg-slate-950/60 rounded-2xl border border-slate-800/80"></div>
+
+                <!-- Custom Seed Config Override Menu -->
+                <details class="mb-6 group bg-slate-950/40 border border-slate-800/80 rounded-2xl">
+                    <summary class="p-3 text-xs text-slate-400 font-bold uppercase select-none cursor-pointer flex justify-between items-center group-open:border-b group-open:border-slate-800">
+                        <span>🔧 Override Starting Bracket Seeds Manually</span>
+                        <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180 text-[10px]"></i>
+                    </summary>
+                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Semi 1 • Team 1</label>
+                            <select id="seed-s1t1" onchange="updateBracketSeedsFromSelectors()" class="w-full bg-slate-900 border border-slate-800 text-xs rounded-lg p-2 text-slate-300"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Semi 1 • Team 2</label>
+                            <select id="seed-s1t2" onchange="updateBracketSeedsFromSelectors()" class="w-full bg-slate-900 border border-slate-800 text-xs rounded-lg p-2 text-slate-300"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Semi 2 • Team 1</label>
+                            <select id="seed-s2t1" onchange="updateBracketSeedsFromSelectors()" class="w-full bg-slate-900 border border-slate-800 text-xs rounded-lg p-2 text-slate-300"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold text-slate-500 mb-1">Semi 2 • Team 2</label>
+                            <select id="seed-s2t2" onchange="updateBracketSeedsFromSelectors()" class="w-full bg-slate-900 border border-slate-800 text-xs rounded-lg p-2 text-slate-300"></select>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Interactive Visual Bracket Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative items-center">
+                    
+                    <!-- Round 1: Semifinals -->
+                    <div class="space-y-6">
+                        <div class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider text-center border-b border-slate-800 pb-1.5">Game 1 & Game 2 (Semifinals)</div>
+                        
+                        <!-- Semifinal 1 -->
+                        <div id="semi-1-card" class="bg-slate-950/60 rounded-2xl border border-slate-800 p-3.5 space-y-2.5"></div>
+
+                        <!-- Semifinal 2 -->
+                        <div id="semi-2-card" class="bg-slate-950/60 rounded-2xl border border-slate-800 p-3.5 space-y-2.5"></div>
+                    </div>
+
+                    <!-- Connectors / Status Info -->
+                    <div class="flex flex-col items-center justify-center p-4 text-center space-y-4">
+                        <div class="hidden md:block w-full h-px bg-slate-800 relative">
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-knicks-blue border border-slate-700 text-[10px] text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-widest whitespace-nowrap">
+                                MSG Tournament Flow
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-900/30 border border-slate-800 rounded-2xl text-xs max-w-xs">
+                            <i class="fa-solid fa-info-circle text-knicks-orange mb-1.5 text-base"></i>
+                            <p class="text-slate-400 leading-relaxed text-[11px]">
+                                Click a team inside the matchups to select them as the game winner. Winners automatically advance to the Championship, while losers populate the Consolation bracket.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Round 2: Final Placements (Championship & Consolation) -->
+                    <div class="space-y-6">
+                        <div class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider text-center border-b border-slate-800 pb-1.5">Game 3 & Game 4 (Championships)</div>
+
+                        <!-- Game 4: Championship Match -->
+                        <div id="championship-card" class="bg-slate-950/60 rounded-2xl border border-slate-800 p-3.5 space-y-2.5 relative"></div>
+
+                        <!-- Game 3: Consolation Match -->
+                        <div id="consolation-card" class="bg-slate-950/60 rounded-2xl border border-slate-800 p-3.5 space-y-2.5 relative"></div>
+                    </div>
+
+                </div>
+
+                <!-- Submit Button Area -->
+                <div id="bracket-submission-panel" class="mt-8 pt-6 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-center md:text-left">
+                        <h4 class="font-bold text-xs uppercase tracking-widest text-slate-400">Current Standing Projection</h4>
+                        <div id="projected-ranking-lineup" class="flex flex-wrap gap-2 mt-1.5 text-xs text-slate-200">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    <button id="btn-submit-bracket" onclick="submitBracketResults()" disabled class="w-full md:w-auto bg-slate-800 text-slate-500 font-extrabold text-xs uppercase px-8 py-3.5 rounded-xl tracking-wider transition-all cursor-not-allowed">
+                        Submit & Log Bracket Results
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Point logger / rank events & log lists grid -->
+            <div class="grid grid-cols-1 gap-6">
+                
+                <!-- Activity Log -->
+                <div class="glass-panel rounded-3xl p-5 md:p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="p-1.5 bg-knicks-blue/10 border border-knicks-blue/20 rounded-lg">
+                                    <i class="fa-solid fa-list-check text-knicks-blue"></i>
+                                </span>
+                                <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Tournament Activity Feed</h3>
+                            </div>
+                            <button onclick="clearLogs()" class="text-[10px] bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-400 font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wide transition-all">
+                                Reset Game Log & Scores
+                            </button>
+                        </div>
+
+                        <!-- Logs list -->
+                        <div id="game-logs-container" class="space-y-2 max-h-[220px] overflow-y-auto pr-2">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Tab 2: Teams View -->
+        <section id="view-teams" class="hidden space-y-6">
+            
+            <!-- Teams Controller Bar -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 font-semibold">Config Toggles:</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="edit-mode-toggle" class="sr-only peer" onchange="toggleRosterEditMode()">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-knicks-orange"></div>
+                        <span class="ml-2 text-xs font-semibold text-slate-300">Unlock Manual Edits</span>
+                    </label>
+                </div>
+                <button onclick="triggerAutoDraft()" class="bg-knicks-blue/10 hover:bg-knicks-blue/20 border border-knicks-blue/30 text-white font-extrabold text-xs px-4 py-2 rounded-xl transition-all">
+                    ⚡ Reload Balanced Roster Preset
+                </button>
+            </div>
+
+            <!-- Teams & Lineups Grid -->
+            <div id="rosters-teams-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Dynamically injected -->
+            </div>
+
+            <!-- Draft Pool for Edit Mode -->
+            <div id="draft-pool-section" class="hidden glass-panel rounded-3xl p-5 md:p-6 mt-6">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                    <h3 class="font-extrabold text-xs uppercase text-white tracking-widest">Available Draft Pool (<span id="pool-count">0</span>)</h3>
+                    <p class="text-[10px] text-slate-400">Reassign players directly using selectors</p>
+                </div>
+                <div id="draft-pool-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <!-- Injected in edit mode -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Tab 3: Drinks Guide View -->
+        <section id="view-drinks" class="hidden space-y-6">
+            
+            <div class="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                <div class="absolute inset-y-0 right-0 w-1/3 bg-radial-gradient(ellipse at center, rgba(245, 132, 38, 0.05) 0%, transparent 70%) pointer-events-none"></div>
+                
+                <h2 class="text-xl font-bold font-display text-white mb-1">MSG Arena Catering & Drinks Guide</h2>
+                <p class="text-xs text-slate-400 max-w-2xl border-b border-slate-800 pb-4 mb-6">
+                    A consolidated shopping blueprint compiled from the survey preferences of all 12 guys. Perfect planning for stock quantities, spirits, and non-alcoholic recovery.
+                </p>
+
+                <!-- Drinks & Mixers Analytics Side-by-Side Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <!-- Alcohol Preferences List (Calculated out of 10 drinkers) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 mb-2">
+                            <span class="text-lg">🍺</span>
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-knicks-orange">Alcohol Volume Preferences (10 Drinkers)</h4>
+                        </div>
+                        <div id="shopping-guide-list" class="space-y-3">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Non-Alcoholic Preferences List (Calculated out of all 12 guys) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-800 pb-2 mb-2">
+                            <span class="text-lg">🥤</span>
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-slate-300">Mixers & Recovery Preferences (12 Guys)</h4>
+                        </div>
+                        <div id="mixers-guide-list" class="space-y-3">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Collaborative Cloud Firebase & UI Render Logic -->
+    <script type="module">
+        // Firebase Modular Web SDK v11 imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Unique path identifier for database separation
+        const appId = 'zzbachelorcup';
+        
+        // Setup initial configurations preloaded with your live keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyAd97W7fjRXHqtljXPdkzs4xRMiSePRvs4",
+            authDomain: "zzbachelorcup.firebaseapp.com",
+            projectId: "zzbachelorcup",
+            storageBucket: "zzbachelorcup.firebasestorage.app",
+            messagingSenderId: "1093392238882",
+            appId: "1:1093392238882:web:8a1403a3edd58ffc39fd7b",
+            measurementId: "G-D3CFZQM9B8"
+        };
+
+        let app = null;
+        let auth = null;
+        let db = null;
+        let useFirebase = false;
+
+        try {
+            // Only initialize Firebase if keys are configured. Gracefully downgrades to Offline Mode if blocked.
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                useFirebase = true;
+            } else {
+                console.warn("No Firebase API key detected. Operating seamlessly in Offline/Local Mode.");
+            }
+        } catch (err) {
+            console.error("Firebase SDK failed to initialize:", err);
+        }
+
+        // Survey response data compiled directly from "ZZ Bachelor Cup 2026: Official Match Day Survey (Responses)"
+        const playersData = [
+            { name: "Evan Edgar", overallScore: 40, hydration: "Fluid Dynamics Specialist", drinks: ["Light Beers", "IPAs & Craft Beers", "Imported Beers", "Stouts / Wheats", "Tequila", "Whiskey", "Rum", "Gin", "Canned Iced Teas", "Seltzers", "Canned Cocktails"], mixers: ["Energy Drinks", "Ginger Ale", "Sports Hydration", "Coffee & Cold Brew"] },
+            { name: "Big Stacks", overallScore: 32, hydration: "Fluid Dynamics Specialist", drinks: ["Light Beers", "Tequila", "Gin", "Seltzers"], mixers: ["Sports Hydration", "Coffee & Cold Brew"] },
+            { name: "Zach Zweibel", overallScore: 32, hydration: "Fluid Dynamics Specialist", drinks: ["Tequila", "Whiskey", "Gin", "Canned Iced Teas", "Seltzers", "Canned Cocktails"], mixers: ["Cola", "Lemon-Lime Sodas", "Tonic Water", "Sports Hydration", "Juices"] },
+            { name: "David", overallScore: 32, hydration: "Pacing Professional", drinks: ["Tequila"], mixers: ["Cola"] },
+            { name: "Stephan", overallScore: 31, hydration: "Pacing Professional", drinks: ["IPAs & Craft Beers", "Rum", "Canned Cocktails"], mixers: ["Root Beer & Cream Sodas", "Juices"] },
+            { name: "Puto", overallScore: 31, hydration: "Fluid Dynamics Specialist", drinks: ["Light Beers", "Imported Beers", "Tequila", "Whiskey", "Vodka", "Rum", "Gin", "Canned Iced Teas", "Seltzers"], mixers: ["Energy Drinks", "Cola", "Lemon-Lime Sodas", "Tonic Water", "Sports Hydration"] },
+            { name: "Sam Fregly", overallScore: 30, hydration: "Sober Sniper", drinks: ["None / Strictly Hydration"], mixers: ["Juices"] },
+            { name: "Chris Owens", overallScore: 27, hydration: "Pacing Professional", drinks: ["Light Beers", "Imported Beers", "Seltzers", "Canned Cocktails"], mixers: ["Coffee & Cold Brew"] },
+            { name: "Sharmari", overallScore: 25, hydration: "Pacing Professional", drinks: ["IPAs & Craft Beers", "Imported Beers", "Tequila", "Whiskey", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"], mixers: ["Energy Drinks", "Cola", "Ginger Ale", "Flavored Seltzers", "Juices"] },
+            { name: "Alex McKeen", overallScore: 24, hydration: "Pacing Professional", drinks: ["Tequila", "Whiskey", "Vodka", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"], mixers: ["Energy Drinks", "Root Beer & Cream Sodas", "Sports Hydration", "Juices"] },
+            { name: "Salah Balawi", overallScore: 22, hydration: "Sober Sniper", drinks: ["None / Strictly Hydration"], mixers: ["Energy Drinks", "Cola", "Ginger Ale", "Juices", "Coffee & Cold Brew"] },
+            { name: "Josh", overallScore: 22, hydration: "Pacing Professional", drinks: ["Light Beers", "Imported Beers", "Tequila", "Vodka", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"], mixers: ["Energy Drinks", "Lemon-Lime Sodas", "Ginger Ale", "Sports Hydration", "Coffee & Cold Brew"] }
+        ];
+
+        // Specific rating index for each sport to compute dynamic event-based seedings
+        const playerSkills = {
+            "Big Stacks": { "Pool": 4, "Air Hockey": 4, "Foosball": 3, "Darts": 3, "Volleyball": 3, "Beer Pong": 4, "Flip Cup": 4, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
+            "Zach Zweibel": { "Pool": 5, "Air Hockey": 3, "Foosball": 2, "Darts": 4, "Volleyball": 2, "Beer Pong": 4, "Flip Cup": 5, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
+            "David": { "Pool": 2, "Air Hockey": 4, "Foosball": 4, "Darts": 4, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 4, "Midnight Cannonball": 1, "Cannonball": 1, "Cornhole": 3, "Smash": 1 },
+            "Salah Balawi": { "Pool": 3, "Air Hockey": 3, "Foosball": 2, "Darts": 3, "Volleyball": 2, "Beer Pong": 2, "Flip Cup": 1, "Cannonball": 3, "Cornhole": 3, "Smash": 2 },
+            "Alex McKeen": { "Pool": 4, "Air Hockey": 2, "Foosball": 1, "Darts": 3, "Volleyball": 2, "Beer Pong": 4, "Flip Cup": 1, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
+            "Stephan": { "Pool": 5, "Air Hockey": 3, "Foosball": 2, "Darts": 1, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 3, "Midnight Cannonball": 3, "Cannonball": 3, "Cornhole": 4, "Smash": 4 },
+            "Chris Owens": { "Pool": 3, "Air Hockey": 3, "Foosball": 3, "Darts": 3, "Volleyball": 3, "Beer Pong": 3, "Flip Cup": 3, "Cannonball": 3, "Cornhole": 3, "Smash": 5 },
+            "Sharmari": { "Pool": 2, "Air Hockey": 2, "Foosball": 3, "Darts": 1, "Volleyball": 2, "Beer Pong": 5, "Flip Cup": 5, "Cannonball": 3, "Cornhole": 2, "Smash": 2 },
+            "Sam Fregly": { "Pool": 4, "Air Hockey": 5, "Foosball": 3, "Darts": 1, "Volleyball": 4, "Beer Pong": 5, "Flip Cup": 3, "Midnight Cannonball": 1, "Cannonball": 1, "Cornhole": 4, "Smash": 5 },
+            "Puto": { "Pool": 4, "Air Hockey": 3, "Foosball": 5, "Darts": 4, "Volleyball": 3, "Beer Pong": 4, "Flip Cup": 4, "Cannonball": 2, "Cornhole": 2, "Smash": 5 },
+            "Josh": { "Pool": 2, "Air Hockey": 3, "Foosball": 2, "Darts": 2, "Volleyball": 3, "Beer Pong": 3, "Flip Cup": 1, "Cannonball": 3, "Cornhole": 3, "Smash": 4 },
+            "Evan Edgar": { "Pool": 5, "Air Hockey": 3, "Foosball": 4, "Darts": 5, "Volleyball": 5, "Beer Pong": 5, "Flip Cup": 5, "Cannonball": 3, "Cornhole": 5, "Smash": 2 }
+        };
+
+        // Mathematically optimized roster configs providing a point spread of only 2 points
+        let defaultTeams = [
+            {
+                id: 1,
+                name: "The Brunson Bombers",
+                badge: "☄️",
+                score: 0,
+                wins: 0,
+                players: ["Evan Edgar", "Sharmari", "Salah Balawi"]
+            },
+            {
+                id: 2,
+                name: "The Zesty KATs",
+                badge: "😼",
+                score: 0,
+                wins: 0,
+                players: ["Big Stacks", "Stephan", "Alex McKeen"]
+            },
+            {
+                id: 3,
+                name: "The Hart Stoppers",
+                badge: "❤️",
+                score: 0,
+                wins: 0,
+                players: ["Zach Zweibel", "David", "Josh"]
+            },
+            {
+                id: 4,
+                name: "The OGs",
+                badge: "🔒",
+                score: 0,
+                wins: 0,
+                players: ["Puto", "Sam Fregly", "Chris Owens"]
+            }
+        ];
+
+        // Active State containers
+        let teams = JSON.parse(JSON.stringify(defaultTeams));
+        let logs = [];
+        let rosterEditMode = false;
+        let activeTab = 'leaderboard';
+        let currentUser = null;
+
+        let bracketState = {
+            event: "Beer Pong 🍺",
+            semi1: { t1: 1, t2: 4, winner: null, loser: null },
+            semi2: { t1: 2, t2: 3, winner: null, loser: null },
+            consolation: { t1: null, t2: null, winner: null, loser: null },
+            championship: { t1: null, t2: null, winner: null, loser: null },
+            results: { first: null, second: null, third: null, fourth: null }
+        };
+
+        // Audio synthesizer feedback mechanics
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        function playBuzzerSound() {
+            initAudio();
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.45);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.45);
+        }
+
+        function playSwishSound() {
+            initAudio();
+            if (!audioCtx) return;
+            const bufferSize = audioCtx.sampleRate * 0.25;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(1800, audioCtx.currentTime + 0.25);
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        }
+
+        // Custom toast helper
+        function showNotification(msg, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `p-3.5 rounded-xl border flex items-center gap-2.5 shadow-lg transform translate-y-2 opacity-0 transition-all duration-300 ${
+                type === 'error' 
+                ? 'bg-rose-950/90 border-rose-800 text-rose-300' 
+                : 'bg-zinc-900/95 border-knicks-orange/40 text-knicks-orange'
+            }`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-basketball'}"></i>
+                <span class="text-xs font-semibold">${msg}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        const initAuth = async () => {
+            if (!useFirebase) {
+                fallbackToOfflineMode();
+                return;
+            }
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth process error:", err);
+                fallbackToOfflineMode();
+            }
+        };
+
+        function fallbackToOfflineMode() {
+            document.getElementById('sync-dot').className = "inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_#ef4444]";
+            document.getElementById('sync-status').innerText = "Offline Mode Active (Relying on Local Cache)";
+            loadLocalBackup();
+            renderAll();
+        }
+
+        // Roster data loaders
+        function loadLocalBackup() {
+            teams = JSON.parse(localStorage.getItem('zz_bachelor_teams')) || JSON.parse(JSON.stringify(defaultTeams));
+            logs = JSON.parse(localStorage.getItem('zz_bachelor_logs')) || [];
+        }
+
+        function saveLocalBackup() {
+            localStorage.setItem('zz_bachelor_teams', JSON.stringify(teams));
+            localStorage.setItem('zz_bachelor_logs', JSON.stringify(logs));
+        }
+
+        // Active database listeners
+        function startRealtimeSync() {
+            if (!useFirebase || !currentUser) {
+                fallbackToOfflineMode();
+                return;
+            }
+
+            document.getElementById('sync-dot').className = "inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]";
+            document.getElementById('sync-status').innerText = `Synced to MSG (User: ${currentUser.uid.substring(0, 8)})`;
+
+            // 1. Teams Sync
+            const teamsCol = collection(db, 'artifacts', appId, 'public', 'data', 'teams');
+            onSnapshot(teamsCol, (snapshot) => {
+                if (snapshot.empty) {
+                    initializeDbTeams();
+                } else {
+                    const dbTeams = [];
+                    snapshot.forEach(docSnap => {
+                        dbTeams.push({ id: parseInt(docSnap.id), ...docSnap.data() });
+                    });
+                    dbTeams.sort((a, b) => a.id - b.id);
+                    teams = dbTeams;
+                    saveLocalBackup();
+                    renderScoreboard();
+                    renderRosterInterface();
+                    updateBracketSeedsFromCalculations();
+                }
+            }, (err) => {
+                console.error("Teams sync failure:", err);
+            });
+
+            // 2. Bracket Sync
+            const bracketDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'bracket', 'current');
+            onSnapshot(bracketDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    bracketState = docSnap.data();
+                    renderBracketUI();
+                } else {
+                    initializeDbBracket();
+                }
+            }, (err) => {
+                console.error("Bracket sync failure:", err);
+            });
+
+            // 3. Logs Sync
+            const logsCol = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+            onSnapshot(logsCol, (snapshot) => {
+                const dbLogs = [];
+                snapshot.forEach(docSnap => {
+                    dbLogs.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                dbLogs.sort((a, b) => b.timestamp - a.timestamp);
+                logs = dbLogs;
+                saveLocalBackup();
+                renderLogLists();
+            }, (err) => {
+                console.error("Logs sync failure:", err);
+            });
+        }
+
+        // Database creators
+        async function initializeDbTeams() {
+            if (!useFirebase || !currentUser) return;
+            for (const team of defaultTeams) {
+                const teamDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teams', team.id.toString());
+                await setDoc(teamDocRef, {
+                    name: team.name,
+                    badge: team.badge,
+                    score: team.score,
+                    wins: team.wins,
+                    players: team.players
+                });
+            }
+        }
+
+        async function initializeDbBracket() {
+            if (!useFirebase || !currentUser) return;
+            const bracketDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'bracket', 'current');
+            await setDoc(bracketDocRef, {
+                event: "Beer Pong 🍺",
+                semi1: { t1: 1, t2: 4, winner: null, loser: null },
+                semi2: { t1: 2, t2: 3, winner: null, loser: null },
+                consolation: { t1: null, t2: null, winner: null, loser: null },
+                championship: { t1: null, t2: null, winner: null, loser: null },
+                results: { first: null, second: null, third: null, fourth: null }
+            });
+        }
+
+        // Real-time modifier updates
+        async function updateScore(teamId, amount) {
+            const team = teams.find(t => t.id === teamId);
+            if (team) {
+                const newScore = Math.max(0, team.score + amount);
+                const timeStamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                if (amount > 0) playSwishSound();
+                else playBuzzerSound();
+
+                if (useFirebase && currentUser) {
+                    const teamDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teams', teamId.toString());
+                    await setDoc(teamDocRef, { score: newScore }, { merge: true });
+
+                    const logsCol = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+                    await addDoc(logsCol, {
+                        text: `${team.badge} ${team.name} score adjusted by ${amount > 0 ? '+' : ''}${amount} pts (New score: ${newScore})`,
+                        time: timeStamp,
+                        timestamp: Date.now()
+                    });
+                } else {
+                    team.score = newScore;
+                    logs.unshift({
+                        text: `${team.badge} ${team.name} score adjusted by ${amount > 0 ? '+' : ''}${amount} pts (New score: ${team.score})`,
+                        time: timeStamp,
+                        timestamp: Date.now()
+                    });
+                    saveLocalBackup();
+                    renderAll();
+                }
+                showNotification(`Adjusted ${team.name} by ${amount > 0 ? '+' : ''}${amount} pts!`);
+            }
+        }
+
+        // Clear actions
+        function clearLogs() {
+            const confirmModal = document.getElementById('custom-confirm-modal');
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                confirmModal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function cancelReset() {
+            const confirmModal = document.getElementById('custom-confirm-modal');
+            confirmModal.classList.add('opacity-0');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+            }, 300);
+        }
+
+        async function executeReset() {
+            playBuzzerSound();
+            if (useFirebase && currentUser) {
+                for (const team of teams) {
+                    const teamDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teams', team.id.toString());
+                    await setDoc(teamDocRef, { score: 0, wins: 0 }, { merge: true });
+                }
+                // Clear out synced logs list
+                const logsCol = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+                const querySnap = await getDocs(logsCol);
+                const deletePromises = [];
+                querySnap.forEach(docSnap => {
+                    deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'logs', docSnap.id)));
+                });
+                await Promise.all(deletePromises);
+                
+                await initializeDbBracket();
+            } else {
+                logs = [];
+                teams.forEach(team => {
+                    team.score = 0;
+                    team.wins = 0;
+                });
+                saveLocalBackup();
+                resetBracketState();
+                renderAll();
+            }
+            cancelReset();
+            showNotification("Reset completed. Scoreboard is clean!");
+        }
+
+        // Bracket seeding calculations
+        function calculateTeamSportScore(team, sportKey) {
+            let total = 0;
+            team.players.forEach(pName => {
+                const cleanName = pName.trim();
+                if (playerSkills[cleanName] && playerSkills[cleanName][sportKey] !== undefined) {
+                    total += playerSkills[cleanName][sportKey];
+                }
+            });
+            return total;
+        }
+
+        function getSportKeyFromSelect(eventValue) {
+            if (eventValue.includes("Beer Pong")) return "Beer Pong";
+            if (eventValue.includes("Pool")) return "Pool";
+            if (eventValue.includes("Super Smash")) return "Smash";
+            if (eventValue.includes("Flip Cup")) return "Flip Cup";
+            if (eventValue.includes("Volleyball")) return "Volleyball";
+            if (eventValue.includes("Cornhole")) return "Cornhole";
+            if (eventValue.includes("Foosball")) return "Foosball";
+            if (eventValue.includes("Darts")) return "Darts";
+            if (eventValue.includes("Air Hockey")) return "Air Hockey";
+            if (eventValue.includes("Cannonball")) return "Cannonball";
+            return "Beer Pong";
+        }
+
+        function resetBracketState() {
+            bracketState.semi1.winner = null;
+            bracketState.semi1.loser = null;
+            bracketState.semi2.winner = null;
+            bracketState.semi2.loser = null;
+            bracketState.consolation = { t1: null, t2: null, winner: null, loser: null };
+            bracketState.championship = { t1: null, t2: null, winner: null, loser: null };
+            bracketState.results = { first: null, second: null, third: null, fourth: null };
+            
+            updateBracketSeedsFromCalculations();
+        }
+
+        async function syncBracketStateToDb() {
+            if (useFirebase && currentUser) {
+                const bracketDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'bracket', 'current');
+                await setDoc(bracketDocRef, bracketState);
+            } else {
+                renderBracketUI();
+            }
+        }
+
+        function updateBracketSeedsFromCalculations() {
+            const eventSelect = document.getElementById('bracket-event-type');
+            if (!eventSelect) return;
+            const eventValue = eventSelect.value;
+            const sportKey = getSportKeyFromSelect(eventValue);
+
+            const ratedTeams = teams.map(t => {
+                return {
+                    id: t.id,
+                    name: t.name,
+                    badge: t.badge,
+                    score: calculateTeamSportScore(t, sportKey)
+                };
+            });
+
+            ratedTeams.sort((a, b) => b.score - a.score);
+
+            bracketState.semi1.t1 = ratedTeams[0].id;
+            bracketState.semi1.t2 = ratedTeams[3].id;
+            bracketState.semi2.t1 = ratedTeams[1].id;
+            bracketState.semi2.t2 = ratedTeams[2].id;
+
+            renderLiveSeedingBreakdown(ratedTeams, sportKey);
+            
+            // Overrides synced to the dom details
+            const s1t1 = document.getElementById('seed-s1t1');
+            const s1t2 = document.getElementById('seed-s1t2');
+            const s2t1 = document.getElementById('seed-s2t1');
+            const s2t2 = document.getElementById('seed-s2t2');
+
+            if (s1t1 && s1t2 && s2t1 && s2t2) {
+                s1t1.value = ratedTeams[0].id;
+                s1t2.value = ratedTeams[3].id;
+                s2t1.value = ratedTeams[1].id;
+                s2t2.value = ratedTeams[2].id;
+            }
+
+            syncBracketStateToDb();
+        }
+
+        function updateBracketSeedsFromSelectors() {
+            const s1t1 = parseInt(document.getElementById('seed-s1t1').value) || 1;
+            const s1t2 = parseInt(document.getElementById('seed-s1t2').value) || 4;
+            const s2t1 = parseInt(document.getElementById('seed-s2t1').value) || 2;
+            const s2t2 = parseInt(document.getElementById('seed-s2t2').value) || 3;
+
+            bracketState.semi1.t1 = s1t1;
+            bracketState.semi1.t2 = s1t2;
+            bracketState.semi2.t1 = s2t1;
+            bracketState.semi2.t2 = s2t2;
+            
+            syncBracketStateToDb();
+        }
+
+        function renderLiveSeedingBreakdown(ratedTeams, sportKey) {
+            const banner = document.getElementById('live-seeding-banner');
+            if (!banner) return;
+            
+            banner.innerHTML = `
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                    <span class="text-knicks-orange font-bold uppercase tracking-wider">📊 Calculated ${sportKey} Combine Strengths:</span>
+                    ${ratedTeams.map((rt, i) => `
+                        <span class="bg-white/5 border border-white/10 px-2 py-1 rounded-lg">
+                            #${i+1} ${rt.badge} ${rt.name.split(' ').pop()}: <strong>${rt.score} pts</strong>
+                        </span>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function selectSemiWinner(matchIndex, winnerId) {
+            initAudio();
+            playSwishSound();
+            if (matchIndex === 1) {
+                bracketState.semi1.winner = winnerId;
+                bracketState.semi1.loser = (winnerId === bracketState.semi1.t1) ? bracketState.semi1.t2 : bracketState.semi1.t1;
+            } else {
+                bracketState.semi2.winner = winnerId;
+                bracketState.semi2.loser = (winnerId === bracketState.semi2.t1) ? bracketState.semi2.t2 : bracketState.semi2.t1;
+            }
+
+            if (bracketState.semi1.winner && bracketState.semi2.winner) {
+                bracketState.championship.t1 = bracketState.semi1.winner;
+                bracketState.championship.t2 = bracketState.semi2.winner;
+                
+                bracketState.consolation.t1 = bracketState.semi1.loser;
+                bracketState.consolation.t2 = bracketState.semi2.loser;
+            } else {
+                bracketState.championship.t1 = null;
+                bracketState.championship.t2 = null;
+                bracketState.consolation.t1 = null;
+                bracketState.consolation.t2 = null;
+                bracketState.championship.winner = null;
+                bracketState.consolation.winner = null;
+            }
+
+            syncBracketStateToDb();
+        }
+
+        function selectFinalsWinner(type, winnerId) {
+            initAudio();
+            playSwishSound();
+            if (type === 'championship') {
+                bracketState.championship.winner = winnerId;
+                bracketState.championship.loser = (winnerId === bracketState.championship.t1) ? bracketState.championship.t2 : bracketState.championship.t1;
+            } else {
+                bracketState.consolation.winner = winnerId;
+                bracketState.consolation.loser = (winnerId === bracketState.consolation.t1) ? bracketState.consolation.t2 : bracketState.consolation.t1;
+            }
+
+            if (bracketState.championship.winner && bracketState.consolation.winner) {
+                bracketState.results.first = bracketState.championship.winner;
+                bracketState.results.second = bracketState.championship.loser;
+                bracketState.results.third = bracketState.consolation.winner;
+                bracketState.results.fourth = bracketState.consolation.loser;
+            } else {
+                bracketState.results = { first: null, second: null, third: null, fourth: null };
+            }
+
+            syncBracketStateToDb();
+        }
+
+        async function submitBracketResults() {
+            if (!bracketState.results.first || !bracketState.results.second || !bracketState.results.third || !bracketState.results.fourth) {
+                showNotification("Bracket incomplete! Run all 4 games to submit.", "error");
+                return;
+            }
+
+            const t1 = teams.find(t => t.id === bracketState.results.first);
+            const t2 = teams.find(t => t.id === bracketState.results.second);
+            const t3 = teams.find(t => t.id === bracketState.results.third);
+            const t4 = teams.find(t => t.id === bracketState.results.fourth);
+
+            const eventValue = document.getElementById('bracket-event-type').value;
+            const timeStamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            playSwishSound();
+
+            if (useFirebase && currentUser) {
+                // Update 1st place
+                const t1Doc = doc(db, 'artifacts', appId, 'public', 'data', 'teams', t1.id.toString());
+                await setDoc(t1Doc, { score: t1.score + 5, wins: t1.wins + 1 }, { merge: true });
+
+                // Update 2nd place
+                const t2Doc = doc(db, 'artifacts', appId, 'public', 'data', 'teams', t2.id.toString());
+                await setDoc(t2Doc, { score: t2.score + 3 }, { merge: true });
+
+                // Update 3rd place
+                const t3Doc = doc(db, 'artifacts', appId, 'public', 'data', 'teams', t3.id.toString());
+                await setDoc(t3Doc, { score: t3.score + 1 }, { merge: true });
+
+                // Sync log addition
+                const logsCol = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
+                await addDoc(logsCol, {
+                    text: `🏆 Bracket Finished: [${eventValue}] 1st: ${t1.name} (+5), 2nd: ${t2.name} (+3), 3rd: ${t3.name} (+1), 4th: ${t4.name} (+0)`,
+                    time: timeStamp,
+                    timestamp: Date.now()
+                });
+
+                // Reset Bracket Sync
+                await initializeDbBracket();
+            } else {
+                t1.score += 5;
+                t1.wins += 1;
+                t2.score += 3;
+                t3.score += 1;
+
+                logs.unshift({
+                    text: `🏆 Bracket Finished: [${eventValue}] 1st: ${t1.name} (+5), 2nd: ${t2.name} (+3), 3rd: ${t3.name} (+1), 4th: ${t4.name} (+0)`,
+                    time: timeStamp,
+                    timestamp: Date.now()
+                });
+
+                saveLocalBackup();
+                resetBracketState();
+                renderAll();
+            }
+
+            showNotification(`Points added to scoreboard for ${eventValue}!`);
+        }
+
+        // Tab selection updates
+        function setTab(tabName) {
+            activeTab = tabName;
+            
+            document.getElementById('view-leaderboard').classList.toggle('hidden', tabName !== 'leaderboard');
+            document.getElementById('view-teams').classList.toggle('hidden', tabName !== 'teams');
+            document.getElementById('view-drinks').classList.toggle('hidden', tabName !== 'drinks');
+
+            const btnLeaderboard = document.getElementById('tab-btn-leaderboard');
+            const btnTeams = document.getElementById('tab-btn-teams');
+            const btnDrinks = document.getElementById('tab-btn-drinks');
+
+            const activeClass = 'bg-knicks-orange text-white knicks-glow-orange font-bold border-knicks-orange';
+            const inactiveClass = 'text-slate-400 border-transparent hover:text-slate-200 hover:bg-white/5';
+
+            [btnLeaderboard, btnTeams, btnDrinks].forEach(btn => {
+                btn.className = `flex-1 py-3 text-xs md:text-sm rounded-xl border text-center transition-all flex items-center justify-center gap-2`;
+            });
+
+            if (tabName === 'leaderboard') btnLeaderboard.className += ' ' + activeClass;
+            else btnLeaderboard.className += ' ' + inactiveClass;
+
+            if (tabName === 'teams') btnTeams.className += ' ' + activeClass;
+            else btnTeams.className += ' ' + inactiveClass;
+
+            if (tabName === 'drinks') btnDrinks.className += ' ' + activeClass;
+            else btnDrinks.className += ' ' + inactiveClass;
+        }
+
+        function toggleRosterEditMode() {
+            rosterEditMode = document.getElementById('edit-mode-toggle').checked;
+            renderRosterInterface();
+        }
+
+        async function assignPlayerToTeam(playerName, targetTeamId) {
+            teams.forEach(t => {
+                t.players = t.players.filter(p => p !== playerName);
+            });
+
+            if (targetTeamId > 0) {
+                const targetTeam = teams.find(t => t.id === targetTeamId);
+                if (targetTeam) {
+                    targetTeam.players.push(playerName);
+                }
+            }
+
+            if (useFirebase && currentUser) {
+                for (const team of teams) {
+                    const teamDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teams', team.id.toString());
+                    await setDoc(teamDocRef, { players: team.players }, { merge: true });
+                }
+            } else {
+                saveLocalBackup();
+                renderAll();
+            }
+            showNotification(`Assigned ${playerName} successfully!`);
+        }
+
+        function triggerAutoDraft() {
+            const confirmModal = document.getElementById('custom-confirm-modal');
+            const desc = confirmModal.querySelector('p');
+            const title = confirmModal.querySelector('h3');
+            const btn = confirmModal.querySelector('button[onclick="executeReset()"]');
+            
+            title.innerText = "Load Balanced Lineups?";
+            desc.innerText = "This will restore the mathematically optimized rosters and overwrite any manual custom player overrides you have set.";
+            btn.setAttribute('onclick', 'executeDraftReset()');
+            
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => confirmModal.classList.remove('opacity-0'), 10);
+        }
+
+        async function executeDraftReset() {
+            if (useFirebase && currentUser) {
+                for (const team of defaultTeams) {
+                    const teamDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'teams', team.id.toString());
+                    await setDoc(teamDocRef, { players: team.players }, { merge: true });
+                }
+            } else {
+                teams = JSON.parse(JSON.stringify(defaultTeams));
+                saveLocalBackup();
+                renderAll();
+            }
+            cancelReset();
+            showNotification("Optimized team roster balance loaded successfully!");
+            
+            const confirmModal = document.getElementById('custom-confirm-modal');
+            confirmModal.querySelector('h3').innerText = "Wipe Roster Scores?";
+            confirmModal.querySelector('p').innerText = "This will reset all team points, total wins, and wipe the tournament activity feed history completely. This action cannot be undone.";
+            confirmModal.querySelector('button[onclick="executeDraftReset()"]').setAttribute('onclick', 'executeReset()');
+        }
+
+        // Dynamic element renderers
+        function renderScoreboard() {
+            const grid = document.getElementById('scoreboard-grid');
+            if (!grid) return;
+            grid.innerHTML = teams.map(team => {
+                return `
+                    <div class="glass-panel rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between min-h-[180px] transition-all hover:scale-[1.02] border-slate-800 hover:border-slate-700">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-white/5 to-transparent pointer-events-none"></div>
+                        
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">${team.badge}</span>
+                                <span class="text-[10px] text-knicks-orange uppercase tracking-widest font-extrabold bg-knicks-orange/10 px-2.5 py-0.5 rounded-full border border-knicks-orange/20">Team 0${team.id}</span>
+                            </div>
+                            <h2 class="text-lg font-extrabold text-white tracking-tight mt-2.5 leading-tight">${team.name}</h2>
+                            <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-medal text-yellow-500"></i>
+                                ${team.wins} Event Victories
+                            </p>
+                        </div>
+
+                        <div class="flex items-end justify-between mt-4">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] uppercase tracking-wider font-bold text-slate-500">Points</span>
+                                <span class="text-4xl font-black text-white font-mono tracking-tighter leading-none">${team.score}</span>
+                            </div>
+                            
+                            <div class="flex gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+                                <button onclick="updateScore(${team.id}, -1)" class="w-8 h-8 flex items-center justify-center text-xs text-rose-400 hover:bg-rose-500/15 rounded-lg transition-all">-1</button>
+                                <button onclick="updateScore(${team.id}, 1)" class="w-8 h-8 flex items-center justify-center text-xs text-emerald-400 hover:bg-emerald-500/15 rounded-lg font-bold transition-all">+1</button>
+                                <button onclick="updateScore(${team.id}, 5)" class="w-10 h-8 flex items-center justify-center text-xs text-knicks-orange hover:bg-knicks-orange/20 rounded-lg font-black transition-all">+5</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRosterInterface() {
+            const grid = document.getElementById('rosters-teams-grid');
+            if (!grid) return;
+            grid.innerHTML = teams.map(team => {
+                let rosterScore = 0;
+                team.players.forEach(p => {
+                    const found = playersData.find(d => d.name === p);
+                    if (found) rosterScore += found.overallScore;
+                });
+
+                return `
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">${team.badge}</span>
+                                <span class="font-extrabold text-sm text-white">${team.name}</span>
+                            </div>
+                            <span class="text-[9px] text-knicks-orange font-bold bg-knicks-orange/10 border border-knicks-orange/20 px-2.5 py-0.5 rounded-full">Combine Score: ${rosterScore}</span>
+                        </div>
+                        
+                        <div class="space-y-2 min-h-[140px]">
+                            ${[0, 1, 2].map(slotIdx => {
+                                const pName = team.players[slotIdx];
+                                if (pName) {
+                                    const pDetails = playersData.find(pd => pd.name === pName);
+                                    
+                                    let hydrationIcon = "🥤";
+                                    if (pDetails.hydration.includes("Fluid")) hydrationIcon = "🌊";
+                                    if (pDetails.hydration.includes("Pacing")) hydrationIcon = "🍹";
+
+                                    return `
+                                        <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3 relative flex justify-between items-center">
+                                            <div>
+                                                <p class="font-extrabold text-xs text-white">${pName}</p>
+                                                <p class="text-[9px] text-slate-400 mt-0.5">${hydrationIcon} ${pDetails.hydration}</p>
+                                            </div>
+                                            ${rosterEditMode ? `
+                                                <button onclick="assignPlayerToTeam('${pName}', 0)" class="text-red-400 hover:text-red-300 p-1.5 hover:bg-red-500/10 rounded-lg text-xs transition-all">
+                                                    <i class="fa-solid fa-times"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                } else {
+                                    return `
+                                        <div class="border border-dashed border-slate-800 rounded-2xl p-3 flex items-center justify-center text-[10px] text-slate-500 italic">
+                                            Roster Slot Empty ${rosterEditMode ? '(Select pool below)' : ''}
+                                        </div>
+                                    `;
+                                }
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const poolSection = document.getElementById('draft-pool-section');
+            const poolList = document.getElementById('draft-pool-list');
+            const allAssigned = teams.flatMap(t => t.players);
+            const available = playersData.filter(p => !allAssigned.includes(p.name));
+            
+            document.getElementById('pool-count').innerText = available.length;
+
+            if (rosterEditMode) {
+                poolSection.classList.remove('hidden');
+                if (available.length === 0) {
+                    poolList.innerHTML = `<p class="col-span-4 text-center text-xs text-slate-500 italic py-4">All 12 players assigned to current rosters.</p>`;
+                } else {
+                    poolList.innerHTML = available.map(p => {
+                        return `
+                            <div class="bg-slate-950 border border-slate-800 p-2 rounded-xl flex justify-between items-center">
+                                <span class="text-xs font-bold text-white">${p.name}</span>
+                                <select onchange="assignPlayerToTeam('${p.name}', parseInt(this.value))" class="bg-slate-800 border border-slate-700 text-[10px] rounded p-1 text-slate-300 outline-none font-sans">
+                                    <option value="0">Unassigned</option>
+                                    ${teams.map(t => `<option value="${t.id}">${t.badge} ${t.name.split(' ').pop()}</option>`).join('')}
+                                </select>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } else {
+                poolSection.classList.add('hidden');
+            }
+        }
+
+        function renderSelectorOptions() {
+            const seeds = ['seed-s1t1', 'seed-s1t2', 'seed-s2t1', 'seed-s2t2'];
+            seeds.forEach((id) => {
+                const select = document.getElementById(id);
+                if (!select) return;
+                
+                select.innerHTML = teams.map(t => {
+                    return `<option value="${t.id}">${t.badge} ${t.name}</option>`;
+                }).join('');
+            });
+        }
+
+        function renderBracketUI() {
+            const getTeamHtml = (teamId, sideSelected, callbackString, label) => {
+                const t = teams.find(team => team.id === teamId);
+                if (!t) {
+                    return `
+                        <div class="border border-dashed border-slate-800 p-3 rounded-xl flex items-center justify-center text-xs text-slate-500 italic">
+                            Waiting on progress...
+                        </div>
+                    `;
+                }
+                const activeBorder = (sideSelected === teamId) ? 'border-knicks-orange bg-knicks-orange/10 font-bold' : 'border-slate-800 bg-slate-950 hover:bg-slate-900';
+                const checkedIcon = (sideSelected === teamId) ? '<i class="fa-solid fa-circle-check text-knicks-orange text-sm"></i>' : '<div class="w-4 h-4 rounded-full border border-slate-700"></div>';
+
+                return `
+                    <div onclick="${callbackString}(${teamId})" class="p-3 border rounded-xl flex justify-between items-center cursor-pointer transition-all ${activeBorder}">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">${t.badge}</span>
+                            <span class="text-xs text-slate-200">${t.name.split(' ').pop()}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] text-slate-500 uppercase font-semibold">${label}</span>
+                            ${checkedIcon}
+                        </div>
+                    </div>
+                `;
+            };
+
+            document.getElementById('semi-1-card').innerHTML = `
+                <div class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-2">Game 1: Semifinal 1</div>
+                <div class="space-y-2">
+                    ${getTeamHtml(bracketState.semi1.t1, bracketState.semi1.winner, 'selectSemiWinner.bind(null, 1)', 'Seed 1')}
+                    ${getTeamHtml(bracketState.semi1.t2, bracketState.semi1.winner, 'selectSemiWinner.bind(null, 1)', 'Seed 4')}
+                </div>
+            `;
+
+            document.getElementById('semi-2-card').innerHTML = `
+                <div class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-2">Game 2: Semifinal 2</div>
+                <div class="space-y-2">
+                    ${getTeamHtml(bracketState.semi2.t1, bracketState.semi2.winner, 'selectSemiWinner.bind(null, 2)', 'Seed 2')}
+                    ${getTeamHtml(bracketState.semi2.t2, bracketState.semi2.winner, 'selectSemiWinner.bind(null, 2)', 'Seed 3')}
+                </div>
+            `;
+
+            document.getElementById('championship-card').innerHTML = `
+                <div class="text-[10px] font-extrabold uppercase text-yellow-500 tracking-wider mb-2 flex items-center justify-between">
+                    <span>👑 Game 4: Championship</span>
+                    <span class="bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded-full text-[8px]">1st & 2nd Place</span>
+                </div>
+                <div class="space-y-2">
+                    ${getTeamHtml(bracketState.championship.t1, bracketState.championship.winner, 'selectFinalsWinner.bind(null, "championship")', 'Winners')}
+                    ${getTeamHtml(bracketState.championship.t2, bracketState.championship.winner, 'selectFinalsWinner.bind(null, "championship")', 'Winners')}
+                </div>
+            `;
+
+            document.getElementById('consolation-card').innerHTML = `
+                <div class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider mb-2 flex items-center justify-between">
+                    <span>🥉 Game 3: Consolation Match</span>
+                    <span class="bg-white/5 text-slate-300 px-2 py-0.5 rounded-full text-[8px]">3rd & 4th Place</span>
+                </div>
+                <div class="space-y-2">
+                    ${getTeamHtml(bracketState.consolation.t1, bracketState.consolation.winner, 'selectFinalsWinner.bind(null, "consolation")', 'Losers')}
+                    ${getTeamHtml(bracketState.consolation.t2, bracketState.consolation.winner, 'selectFinalsWinner.bind(null, "consolation")', 'Losers')}
+                </div>
+            `;
+
+            const submitBtn = document.getElementById('btn-submit-bracket');
+            const rankingDiv = document.getElementById('projected-ranking-lineup');
+
+            if (bracketState.results.first && bracketState.results.second && bracketState.results.third && bracketState.results.fourth) {
+                submitBtn.disabled = false;
+                submitBtn.className = "w-full md:w-auto bg-knicks-orange hover:bg-orange-600 text-white font-extrabold text-xs uppercase px-8 py-3.5 rounded-xl tracking-wider transition-all shadow-lg shadow-knicks-orange/15";
+                
+                const t1 = teams.find(t => t.id === bracketState.results.first);
+                const t2 = teams.find(t => t.id === bracketState.results.second);
+                const t3 = teams.find(t => t.id === bracketState.results.third);
+                const t4 = teams.find(t => t.id === bracketState.results.fourth);
+
+                rankingDiv.innerHTML = `
+                    <span class="bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 px-2.5 py-1 rounded-lg">🥇 1st: ${t1.name}</span>
+                    <span class="bg-slate-300/10 border border-slate-300/20 text-slate-300 px-2.5 py-1 rounded-lg">🥈 2nd: ${t2.name}</span>
+                    <span class="bg-amber-600/10 border border-amber-600/20 text-amber-500 px-2.5 py-1 rounded-lg">🥉 3rd: ${t3.name}</span>
+                    <span class="bg-slate-800/20 border border-slate-800 text-slate-500 px-2.5 py-1 rounded-lg">💀 4th: ${t4.name}</span>
+                `;
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.className = "w-full md:w-auto bg-slate-800 text-slate-500 font-extrabold text-xs uppercase px-8 py-3.5 rounded-xl tracking-wider transition-all cursor-not-allowed";
+                rankingDiv.innerHTML = `<span class="italic text-slate-500 text-xs">Awaiting match winner reports...</span>`;
+            }
+        }
+
+        function renderBarAnalytics() {
+            const listContainer = document.getElementById('shopping-guide-list');
+            if (!listContainer) return;
+            
+            const drinksTally = {};
+            playersData.forEach(p => {
+                p.drinks.forEach(d => {
+                    const cleaned = d.split(' (e.g.')[0].trim();
+                    if (cleaned && cleaned !== "None / Strictly Hydration") {
+                        drinksTally[cleaned] = (drinksTally[cleaned] || 0) + 1;
+                    }
+                });
+            });
+
+            const sortedDrinks = Object.entries(drinksTally).sort((a,b) => b[1] - a[1]);
+
+            listContainer.innerHTML = sortedDrinks.map(([category, count]) => {
+                const percentage = Math.round((count / 10) * 100);
+                return `
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold mb-1">
+                            <span class="text-slate-300">${category}</span>
+                            <span class="text-knicks-orange font-bold">${count} / 10 Guys (${percentage}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-white/5">
+                            <div class="bg-gradient-to-r from-knicks-blue to-knicks-orange h-full rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const mixersContainer = document.getElementById('mixers-guide-list');
+            const mixersTally = {};
+            playersData.forEach(p => {
+                p.mixers.forEach(m => {
+                    const cleaned = m.split(' (e.g.')[0].trim();
+                    if (cleaned && cleaned !== "None") {
+                        mixersTally[cleaned] = (mixersTally[cleaned] || 0) + 1;
+                    }
+                });
+            });
+
+            const sortedMixers = Object.entries(mixersTally).sort((a,b) => b[1] - a[1]);
+
+            mixersContainer.innerHTML = sortedMixers.map(([category, count]) => {
+                const percentage = Math.round((count / 12) * 100);
+                return `
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold mb-1">
+                            <span class="text-slate-300">${category}</span>
+                            <span class="text-indigo-400 font-bold">${count} / 12 Guys (${percentage}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-white/5">
+                            <div class="bg-gradient-to-r from-knicks-blue to-indigo-500 h-full rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLogLists() {
+            const container = document.getElementById('game-logs-container');
+            if (!container) return;
+            if (logs.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-xs italic py-2">No games logged yet. Scoreboards and statistics are in their original starting positions.</p>`;
+                return;
+            }
+            container.innerHTML = logs.map(log => {
+                return `
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between items-center text-xs">
+                        <span class="text-slate-300 font-medium">${log.text}</span>
+                        <span class="text-[9px] text-slate-500 bg-white/5 px-2 py-1 rounded font-mono">${log.time}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAll() {
+            renderScoreboard();
+            renderRosterInterface();
+            renderSelectorOptions();
+            renderBarAnalytics();
+            renderLogLists();
+            
+            updateBracketSeedsFromCalculations();
+        }
+
+        // Export functions to standard window object scope for markup events
+        window.setTab = setTab;
+        window.updateScore = updateScore;
+        window.clearLogs = clearLogs;
+        window.cancelReset = cancelReset;
+        window.executeReset = executeReset;
+        window.selectSemiWinner = selectSemiWinner;
+        window.selectFinalsWinner = selectFinalsWinner;
+        window.submitBracketResults = submitBracketResults;
+        window.toggleRosterEditMode = toggleRosterEditMode;
+        window.assignPlayerToTeam = assignPlayerToTeam;
+        window.triggerAutoDraft = triggerAutoDraft;
+        window.executeDraftReset = executeDraftReset;
+        window.resetBracketState = resetBracketState;
+        window.updateBracketSeedsFromSelectors = updateBracketSeedsFromSelectors;
+
+        // Initialize App Authentications
+        if (useFirebase && auth) {
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    startRealtimeSync();
+                } else {
+                    initAuth();
+                }
+            });
+        } else {
+            fallbackToOfflineMode();
+        }
+
+        // Initialize layout mounts
+        window.addEventListener('DOMContentLoaded', () => {
+            setTab('leaderboard');
+            loadLocalBackup();
+            renderAll();
+        });
+    </script>
+
+</body>
+</html>
