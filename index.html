@@ -101,7 +101,7 @@
                 <button onclick="cancelReset()" class="flex-1 py-2.5 rounded-xl border border-slate-800 hover:bg-white/5 text-xs font-bold text-slate-400 transition-all">
                     Cancel
                 </button>
-                <button onclick="executeReset()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-extrabold text-white uppercase tracking-widest transition-all shadow-lg shadow-rose-950">
+                <button id="modal-confirm-btn" onclick="executeReset()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-extrabold text-white uppercase tracking-widest transition-all shadow-lg shadow-rose-950">
                     Confirm Wipe
                 </button>
             </div>
@@ -390,10 +390,10 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Unique path identifier for database separation
+        // Unique path identifier for database separation (RULE 1)
         const appId = 'zzbachelorcup';
         
-        // Setup initial configurations preloaded with your live keys
+        // Custom keys preloaded from survey image configurations
         const firebaseConfig = {
             apiKey: "AIzaSyAd97W7fjRXHqtljXPdkzs4xRMiSePRvs4",
             authDomain: "zzbachelorcup.firebaseapp.com",
@@ -410,7 +410,7 @@
         let useFirebase = false;
 
         try {
-            // Only initialize Firebase if keys are configured. Gracefully downgrades to Offline Mode if blocked.
+            // Safe initial fallback guard checks to prevent local filesystem crashes
             if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -623,7 +623,7 @@
             document.getElementById('sync-dot').className = "inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]";
             document.getElementById('sync-status').innerText = `Synced to MSG (User: ${currentUser.uid.substring(0, 8)})`;
 
-            // 1. Teams Sync
+            // 1. Teams Sync (RULE 1 & 2)
             const teamsCol = collection(db, 'artifacts', appId, 'public', 'data', 'teams');
             onSnapshot(teamsCol, (snapshot) => {
                 if (snapshot.empty) {
@@ -657,7 +657,7 @@
                 console.error("Bracket sync failure:", err);
             });
 
-            // 3. Logs Sync
+            // 3. Logs Sync (RULE 2 - Sort in memory)
             const logsCol = collection(db, 'artifacts', appId, 'public', 'data', 'logs');
             onSnapshot(logsCol, (snapshot) => {
                 const dbLogs = [];
@@ -836,6 +836,12 @@
             const eventValue = eventSelect.value;
             const sportKey = getSportKeyFromSelect(eventValue);
 
+            // FAILSAFE GUARD CLAUSE: Wait for all 4 teams to be fully loaded to prevent sequential load crashes
+            if (!teams || teams.length < 4) {
+                console.warn("Rosters are loading or incomplete. Awaiting complete 4-team dataset...");
+                return;
+            }
+
             const ratedTeams = teams.map(t => {
                 return {
                     id: t.id,
@@ -846,6 +852,9 @@
             });
 
             ratedTeams.sort((a, b) => b.score - a.score);
+
+            // Double check safety check
+            if (ratedTeams.length < 4) return;
 
             bracketState.semi1.t1 = ratedTeams[0].id;
             bracketState.semi1.t2 = ratedTeams[3].id;
@@ -1073,11 +1082,10 @@
             const confirmModal = document.getElementById('custom-confirm-modal');
             const desc = confirmModal.querySelector('p');
             const title = confirmModal.querySelector('h3');
-            const btn = confirmModal.querySelector('button[onclick="executeReset()"]');
             
             title.innerText = "Load Balanced Lineups?";
             desc.innerText = "This will restore the mathematically optimized rosters and overwrite any manual custom player overrides you have set.";
-            btn.setAttribute('onclick', 'executeDraftReset()');
+            document.getElementById('modal-confirm-btn').setAttribute('onclick', 'executeDraftReset()');
             
             confirmModal.classList.remove('hidden');
             setTimeout(() => confirmModal.classList.remove('opacity-0'), 10);
@@ -1100,7 +1108,7 @@
             const confirmModal = document.getElementById('custom-confirm-modal');
             confirmModal.querySelector('h3').innerText = "Wipe Roster Scores?";
             confirmModal.querySelector('p').innerText = "This will reset all team points, total wins, and wipe the tournament activity feed history completely. This action cannot be undone.";
-            confirmModal.querySelector('button[onclick="executeDraftReset()"]').setAttribute('onclick', 'executeReset()');
+            document.getElementById('modal-confirm-btn').setAttribute('onclick', 'executeReset()');
         }
 
         // Dynamic element renderers
