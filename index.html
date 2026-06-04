@@ -50,6 +50,18 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #F58426;
         }
+        /* Bracket glow styles similar to evroon/bracket */
+        .match-card-glow {
+            box-shadow: 0 0 15px rgba(245, 132, 38, 0.15);
+        }
+        .winner-glow {
+            box-shadow: 0 0 20px rgba(245, 132, 38, 0.35);
+            border-color: rgba(245, 132, 38, 0.6) !important;
+        }
+        /* Elegant smooth curves */
+        svg path {
+            transition: stroke 0.3s, stroke-width 0.3s;
+        }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen pb-12 flex flex-col justify-between">
@@ -119,7 +131,7 @@
                     </div>
                 </div>
 
-                <!-- Teams Display Grid -->
+                <!-- Teams Grid -->
                 <div id="rosters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="text-center py-12 text-gray-500 font-mono text-sm col-span-2">
                         Loading competitor rosters...
@@ -157,23 +169,23 @@
                                 </div>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <button onclick="quickSimulate()" class="bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5">
+                                <button onclick="quickSimulate()" class="bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer">
                                     🎲 Simulation Bot
                                 </button>
-                                <button onclick="resetActiveEvent()" class="bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all">
+                                <button onclick="resetActiveEvent()" class="bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer">
                                     🗑️ Reset Event
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 4-Team Championship Bracket Visuals -->
+                        <!-- 4-Team Championship Bracket Visuals (evroon/bracket style) -->
                         <div class="space-y-6">
                             <h4 class="font-arena text-sm text-gray-400 tracking-wider">Tournament Tree</h4>
                             
                             <!-- Visual Columns Wrapper -->
                             <div id="bracket-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 relative min-h-[460px]">
                                 
-                                <!-- Dynamic SVG Connector Lines (Option A: Desktop Only overlay) -->
+                                <!-- Dynamic SVG Connector Lines -->
                                 <svg id="bracket-svg" class="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style="z-index: 0;"></svg>
 
                                 <!-- Column 1: Semifinals -->
@@ -692,7 +704,7 @@
             }
         }
 
-        // Classic tournament connecting pathways (Option A)
+        // Classic tournament connecting pathways (Option A - Modified to smooth curves like evroon/bracket)
         function drawBracketLines() {
             const svg = document.getElementById('bracket-svg');
             const container = document.getElementById('bracket-container');
@@ -731,51 +743,31 @@
             const c3 = getBoxCoords(third);
             const c4 = getBoxCoords(finals);
 
-            // 1. Draw beautiful orthogonal path for Winners moving to Gold Medal match (c4)
-            // Meets at a horizontal mid-point halfway between SF right edges and Gold left edge
-            const midX_winners = c1.right + (c4.left - c1.right) * 0.45;
+            // Draw clean Bezier curve pathways like evroon/bracket instead of rigid orthogonal lines
+            const drawCurve = (startX, startY, endX, endY, isDashed = false, strokeColor = "#F58426") => {
+                const controlX = startX + (endX - startX) * 0.5;
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                // M = Move, C = Cubic Bezier curve (control1, control2, endPoint)
+                path.setAttribute("d", `M ${startX} ${startY} C ${controlX} ${startY}, ${controlX} ${endY}, ${endX} ${endY}`);
+                path.setAttribute("stroke", strokeColor);
+                path.setAttribute("stroke-width", "2.5");
+                path.setAttribute("fill", "none");
+                path.setAttribute("opacity", isDashed ? "0.45" : "0.75");
+                if (isDashed) {
+                    path.setAttribute("stroke-dasharray", "5,5");
+                }
+                svg.appendChild(path);
+            };
 
             // SF1 to Finals path
-            const pathWinner1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathWinner1.setAttribute("d", `M ${c1.right} ${c1.centerY} H ${midX_winners} V ${c4.centerY} H ${c4.left}`);
-            pathWinner1.setAttribute("stroke", "#F58426"); // Knicks Orange
-            pathWinner1.setAttribute("stroke-width", "2");
-            pathWinner1.setAttribute("fill", "none");
-            pathWinner1.setAttribute("opacity", "0.6");
-            svg.appendChild(pathWinner1);
-
+            drawCurve(c1.right, c1.centerY, c4.left, c4.centerY, false, "#F58426");
             // SF2 to Finals path
-            const pathWinner2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathWinner2.setAttribute("d", `M ${c2.right} ${c2.centerY} H ${midX_winners} V ${c4.centerY} H ${c4.left}`);
-            pathWinner2.setAttribute("stroke", "#F58426"); // Knicks Orange
-            pathWinner2.setAttribute("stroke-width", "2");
-            pathWinner2.setAttribute("fill", "none");
-            pathWinner2.setAttribute("opacity", "0.6");
-            svg.appendChild(pathWinner2);
+            drawCurve(c2.right, c2.centerY, c4.left, c4.centerY, false, "#F58426");
 
-            // 2. Draw dashed paths representing Semifinal losers dropping down to Bronze Match (c3)
-            // Meets at a horizontal mid-point halfway between SF right edges and Bronze left edge
-            const midX_losers = c1.right + (c3.left - c1.right) * 0.55;
-
-            // SF1 to Third Place path (Dashed)
-            const pathLoser1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathLoser1.setAttribute("d", `M ${c1.right} ${c1.centerY} H ${midX_losers} V ${c3.centerY} H ${c3.left}`);
-            pathLoser1.setAttribute("stroke", "#006BB6"); // Knicks Blue
-            pathLoser1.setAttribute("stroke-width", "2");
-            pathLoser1.setAttribute("stroke-dasharray", "4,4");
-            pathLoser1.setAttribute("fill", "none");
-            pathLoser1.setAttribute("opacity", "0.45");
-            svg.appendChild(pathLoser1);
-
-            // SF2 to Third Place path (Dashed)
-            const pathLoser2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathLoser2.setAttribute("d", `M ${c2.right} ${c2.centerY} H ${midX_losers} V ${c3.centerY} H ${c3.left}`);
-            pathLoser2.setAttribute("stroke", "#006BB6"); // Knicks Blue
-            pathLoser2.setAttribute("stroke-width", "2");
-            pathLoser2.setAttribute("stroke-dasharray", "4,4");
-            pathLoser2.setAttribute("fill", "none");
-            pathLoser2.setAttribute("opacity", "0.45");
-            svg.appendChild(pathLoser2);
+            // SF1 to Third Place path (Dashed representing drop-down)
+            drawCurve(c1.right, c1.centerY, c3.left, c3.centerY, true, "#006BB6");
+            // SF2 to Third Place path (Dashed representing drop-down)
+            drawCurve(c2.right, c2.centerY, c3.left, c3.centerY, true, "#006BB6");
         }
 
         // Event panel logic
@@ -920,8 +912,54 @@
             document.getElementById('finals-t1').innerText = sf1Winner;
             document.getElementById('finals-t2').innerText = sf2Winner;
 
+            // Apply high-fidelity winner/loser highlighting like evroon/bracket
+            updateVisualNodeGlows(sf1Winner, sf1Loser, sf2Winner, sf2Loser);
+
             // Render/align custom connectors on screen
             setTimeout(drawBracketLines, 50);
+        }
+
+        // Updates active vs inactive visual feedback in nodes (similar to evroon/bracket highlight states)
+        function updateVisualNodeGlows(sf1Win, sf1Lose, sf2Win, sf2Lose) {
+            const cardSF1 = document.getElementById('sf1-card');
+            const cardSF2 = document.getElementById('sf2-card');
+            const cardThird = document.getElementById('third-card');
+            const cardFinals = document.getElementById('finals-card');
+
+            // Apply highlight states
+            const sf1_1 = parseInt(document.getElementById('sf1-s1').value) || 0;
+            const sf1_2 = parseInt(document.getElementById('sf1-s2').value) || 0;
+            const sf2_1 = parseInt(document.getElementById('sf2-s1').value) || 0;
+            const sf2_2 = parseInt(document.getElementById('sf2-s2').value) || 0;
+
+            if (sf1_1 !== 0 || sf1_2 !== 0) {
+                cardSF1.classList.add('winner-glow');
+            } else {
+                cardSF1.classList.remove('winner-glow');
+            }
+
+            if (sf2_1 !== 0 || sf2_2 !== 0) {
+                cardSF2.classList.add('winner-glow');
+            } else {
+                cardSF2.classList.remove('winner-glow');
+            }
+
+            const third_1 = parseInt(document.getElementById('third-s1').value) || 0;
+            const third_2 = parseInt(document.getElementById('third-s2').value) || 0;
+            const finals_1 = parseInt(document.getElementById('finals-s1').value) || 0;
+            const finals_2 = parseInt(document.getElementById('finals-s2').value) || 0;
+
+            if (third_1 !== 0 || third_2 !== 0) {
+                cardThird.classList.add('winner-glow');
+            } else {
+                cardThird.classList.remove('winner-glow');
+            }
+
+            if (finals_1 !== 0 || finals_2 !== 0) {
+                cardFinals.classList.add('winner-glow');
+            } else {
+                cardFinals.classList.remove('winner-glow');
+            }
         }
 
         // Commit and Lock Event rankings
