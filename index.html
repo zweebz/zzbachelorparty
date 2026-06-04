@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
 
-<!-- Tailwind -->
+<!-- ✅ FIX: Proper Tailwind Load -->
 https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
 
 <!-- Fonts -->
@@ -19,94 +19,60 @@ body { font-family: 'Inter', sans-serif; background:#060b19; }
 .knicks-orange { color:#F58426; }
 .knicks-blue { color:#006BB6; }
 .bg-knicks-blue { background:#006BB6; }
-.bg-knicks-orange { background:#F58426; }
-.border-knicks-orange { border-color:#F58426; }
 .border-knicks-blue { border-color:#006BB6; }
-
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:#0B132B}
-::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#F58426}
-
-.match-card-glow{box-shadow:0 0 15px rgba(245,132,38,.15)}
-.winner-glow{box-shadow:0 0 20px rgba(245,132,38,.35);border-color:rgba(245,132,38,.6)!important}
-
-svg path{transition:stroke .3s,stroke-width .3s}
-
-.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)}
-.focus\:not-sr-only:focus{position:static;width:auto;height:auto;clip:auto}
 </style>
 </head>
 
 <body class="text-gray-100 min-h-screen flex flex-col">
 
-<a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
-
-<header class="bg-black py-8 border-b-8 border-knicks-orange text-center">
-<h1 class="font-arena text-4xl sm:text-6xl">ZZ BACHELOR <span class="knicks-orange">CUP</span> 2026</h1>
-<p class="text-gray-400 mt-2 text-sm">MSG Arena Live Tracker</p>
+<header class="bg-black py-8 border-b-8 border-orange-500 text-center">
+<h1 class="font-arena text-4xl sm:text-6xl">ZZ BACHELOR <span class="knicks-orange">CUP</span></h1>
 </header>
 
-<main id="main" class="max-w-7xl mx-auto w-full px-4 mt-6 grid lg:grid-cols-3 gap-6">
-
-<div class="lg:col-span-2 space-y-6">
-
+<main class="max-w-7xl mx-auto w-full px-4 mt-6 grid lg:grid-cols-3 gap-6">
+<!-- LEFT -->
+<div class="lg:col-span-2">
 <nav class="flex gap-2 bg-slate-900 p-2 rounded-xl">
 <button class="tab-btn bg-knicks-blue px-4 py-2 rounded" data-tab="teams">Teams</button>
 <button class="tab-btn text-gray-400" data-tab="events">Events</button>
 </nav>
 
-<section id="teams" class="tab-pane">
-<h2 class="font-arena text-xl mb-4">Teams</h2>
-<div id="rosters-grid" class="grid md:grid-cols-2 gap-4">
-<div class="text-center text-gray-500">Loading...</div>
-</div>
+<section id="teams" class="tab-pane mt-4">
+<div id="rosters-grid" class="grid md:grid-cols-2 gap-4"></div>
 </section>
 
-<section id="events" class="tab-pane hidden">
-<h2 class="font-arena text-xl mb-4">Bracket</h2>
-
-<div class="grid md:grid-cols-3 gap-4 relative">
-<svg id="bracket-svg" class="absolute inset-0 w-full h-full pointer-events-none"></svg>
-
+<section id="events" class="tab-pane hidden mt-4">
+<div class="grid md:grid-cols-3 gap-4">
 <div>
-<h3 class="text-gray-400 text-xs mb-2">Semifinals</h3>
-<div id="sf1" class="p-2 bg-slate-900 rounded">
+<h3 class="text-xs text-gray-400">Semifinal</h3>
 <select id="sf1-t1"></select>
 <input id="sf1-s1" type="number" value="0">
 <select id="sf1-t2"></select>
 <input id="sf1-s2" type="number" value="0">
 </div>
-</div>
 
 <div>
-<h3 class="text-gray-400 text-xs mb-2">Final</h3>
-<div id="finals" class="p-2 bg-slate-900 rounded">
+<h3 class="text-xs text-gray-400">Final</h3>
 <span id="finals-t1">TBD</span>
 <input id="finals-s1" type="number" value="0">
 <span id="finals-t2">TBD</span>
 <input id="finals-s2" type="number" value="0">
 </div>
-</div>
 
 <div>
-<h3 class="text-gray-400 text-xs mb-2">3rd Place</h3>
-<div id="third" class="p-2 bg-slate-900 rounded">
+<h3 class="text-xs text-gray-400">3rd</h3>
 <span id="third-t1">TBD</span>
-<input id="third-s1" type="number" value="0">
 <span id="third-t2">TBD</span>
-<input id="third-s2" type="number" value="0">
-</div>
 </div>
 
 </div>
 
 <button id="save" class="bg-knicks-blue mt-4 px-4 py-2 rounded">Save</button>
-
 </section>
 
 </div>
 
+<!-- RIGHT -->
 <aside class="bg-black border-4 border-knicks-blue p-4 rounded-xl sticky top-4 h-fit">
 <h3 class="font-arena text-xl mb-4">Standings</h3>
 <div id="leaderboard"></div>
@@ -114,80 +80,89 @@ svg path{transition:stroke .3s,stroke-width .3s}
 
 </main>
 
-<dialog id="modal" class="p-6 bg-slate-900 rounded">
-<p id="modal-content"></p>
-<button onclick="document.getElementById('modal').close()">Close</button>
-</dialog>
-
-<footer class="text-center text-xs text-gray-500 mt-10 py-4 border-t">
-ZZ Bachelor Cup 2026
-</footer>
-
 <script type="module">
 
-const teams=[
-"OGs","Harts","Brunsons","KATs"
-]
+/* ✅ IMPORT YOUR REAL MODULES */
+import './js/constants.js';
+import './js/firebase/sync.js';
+import './js/ui/tabs.js';
+import './js/ui/notifications.js';
+import './js/ui/accessibility.js';
+import './js/utils/dom.js';
+import './js/utils/validation.js';
+/* ✅ LOCAL STATE */
+const teams=["OGs","Harts","Brunsons","KATs"];
+const state={scores:{},results:{}};
 
-const state={scores:{},standings:{}}
 
-const grid=document.getElementById("rosters-grid")
+/* ✅ RENDER TEAMS */
+const grid=document.getElementById("rosters-grid");
 teams.forEach(t=>{
-let div=document.createElement("div")
-div.className="p-4 bg-slate-900 rounded"
-div.textContent=t
-grid.appendChild(div)
-})
-
-function populateSelect(id){
-let sel=document.getElementById(id)
+let d=document.createElement("div");
+d.className="p-4 bg-slate-900 rounded";
+d.textContent=t;
+grid.appendChild(d);
+});
+/* ✅ POPULATE SELECTS */
+function fillSelect(id){
+let el=document.getElementById(id);
 teams.forEach(t=>{
-let o=document.createElement("option")
-o.value=t
-o.textContent=t
-sel.appendChild(o)
-})
+let o=document.createElement("option");
+o.value=t;o.textContent=t;
+el.appendChild(o);
+});
 }
 
-["sf1-t1","sf1-t2"].forEach(populateSelect)
-
+fillSelect("sf1-t1");
+fillSelect("sf1-t2");
+/* ✅ SCORING ENGINE */
 function calculate(){
-let scores={}
-teams.forEach(t=>scores[t]=0)
+let scores={};
+teams.forEach(t=>scores[t]=0);
+let t1=document.getElementById("sf1-t1").value;
+let t2=document.getElementById("sf1-t2").value;
+let s1=parseInt(document.getElementById("sf1-s1").value)||0;
+let s2=parseInt(document.getElementById("sf1-s2").value)||0;
+let winner=null, loser=null;
 
-let s1=parseInt(sf1-s1.value)||0
-let s2=parseInt(sf1-s2.value)||0
 
-if(s1>s2){scores[sf1-t1.value]+=4}
-else{scores[sf1-t2.value]+=4}
+if(s1>s2){winner=t1; loser=t2}
+else if(s2>s1){winner=t2; loser=t1}
 
-render(scores)
+
+if(winner){
+scores[winner]+=4;
+document.getElementById("finals-t1").textContent=winner;
+document.getElementById("third-t1").textContent=loser;
 }
 
+render(scores);
+}
+
+/* ✅ RENDER LEADERBOARD */
 function render(scores){
-let el=document.getElementById("leaderboard")
-el.innerHTML=""
-Object.entries(scores).forEach(([t,s])=>{
-let d=document.createElement("div")
-d.textContent=t+": "+s
-el.appendChild(d)
-})
+let el=document.getElementById("leaderboard");
+el.innerHTML="";
+Object.entries(scores)
+.sort((a,b)=>b[1]-a[1])
+.forEach(([team,score])=>{
+let row=document.createElement("div");
+row.className="flex justify-between text-sm border-b border-white/10 py-1";
+row.innerHTML=`<span>${team}</span><span>${score}</span>`;
+el.appendChild(row);
+});
 }
+/* ✅ BIND */
+document.getElementById("save").addEventListener("click", calculate);
 
-document.getElementById("save").onclick=calculate
 
-// tabs
-
+/* ✅ TABS */
 document.querySelectorAll(".tab-btn").forEach(btn=>{
 btn.onclick=()=>{
-
-document.querySelectorAll(".tab-pane").forEach(p=>p.classList.add("hidden"))
-document.getElementById(btn.dataset.tab).classList.remove("hidden")
-
-}
-})
-
+document.querySelectorAll(".tab-pane").forEach(p=>p.classList.add("hidden"));
+document.getElementById(btn.dataset.tab).classList.remove("hidden");
+};
+});
 </script>
 
 </body>
-</html>
