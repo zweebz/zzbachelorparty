@@ -93,12 +93,6 @@
                 <button onclick="switchTab('scoring')" id="tab-btn-scoring" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
                     ⚔️ EVENTS & BRACKETS
                 </button>
-                <button onclick="switchTab('commish')" id="tab-btn-commish" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
-                    📊 COMMISSIONER HUB
-                </button>
-                <button onclick="switchTab('sync')" id="tab-btn-sync" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
-                    🔄 CSV IMPORT
-                </button>
             </div>
 
             <!-- Toast Alert Notification Area -->
@@ -271,123 +265,6 @@
                         </div>
                     </div>
 
-                </div>
-            </div>
-
-            <!-- TAB 3: COMMISSIONER HUB -->
-            <div id="tab-content-commish" class="tab-pane hidden space-y-6">
-                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
-                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                        <h2 class="font-arena text-2xl tracking-wide text-white flex items-center gap-2">
-                            👑 Commissioner Analytics Desk
-                        </h2>
-                        <span class="text-xs bg-knicks-orange/10 border border-knicks-orange/20 text-knicks-orange px-3 py-1 rounded-md font-mono font-bold">Party Size: 12 Players</span>
-                    </div>
-
-                    <!-- Analytics Cards Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-400 text-xs font-mono block">Zero-Proof / Sober Snipers</span>
-                            <span id="commish-sober-count" class="text-3xl font-arena text-sky-400 mt-1 block">0</span>
-                        </div>
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-400 text-xs font-mono block">No-Pork Restraints</span>
-                            <span id="commish-pork-count" class="text-3xl font-arena text-orange-400 mt-1 block">0</span>
-                        </div>
-                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                            <span class="text-gray-400 text-xs font-mono block">Special Diet / Celiac / Lactose</span>
-                            <span id="commish-special-count" class="text-3xl font-arena text-emerald-400 mt-1 block">0</span>
-                        </div>
-                    </div>
-
-                    <!-- Diet, Hydration, Allergies Detailed Board -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-black/40 p-5 rounded-xl border border-white/5 space-y-3">
-                            <h3 class="font-arena text-sm text-knicks-orange tracking-wider">Allergies & Medical Exclusions</h3>
-                            <div class="divide-y divide-white/5 text-xs text-gray-300" id="dietary-list-commish">
-                                <!-- Populated dynamically from player DB -->
-                            </div>
-                        </div>
-
-                        <div class="bg-black/40 p-5 rounded-xl border border-white/5 space-y-3">
-                            <h3 class="font-arena text-sm text-sky-400 tracking-wider">Hydration Profiles & Archetypes</h3>
-                            <div class="divide-y divide-white/5 text-xs text-gray-300" id="hydration-list-commish">
-                                <!-- Populated dynamically from player DB -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Automatically Aggregated Grocery Shopping List -->
-                    <div class="bg-black/60 p-5 rounded-xl border border-white/10 space-y-4">
-                        <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                            <h3 class="font-arena text-sm text-yellow-400 tracking-wider flex items-center gap-1.5">
-                                🛒 AUTOMATED GROCERY & LIQUOR CALCULATOR
-                            </h3>
-                            <span class="text-[10px] font-mono text-gray-400">Derived from 12 surveys</span>
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed">
-                            Based on player alcohol and beverage preference data, the commissioner should target these items for the kitchen and bar stocking.
-                        </p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Alcohol Section -->
-                            <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5 space-y-2">
-                                <span class="text-xs font-bold text-gray-300 block uppercase border-b border-white/5 pb-1">Alcohol Purchases</span>
-                                <ul class="space-y-1 text-xs font-mono text-gray-400" id="shopping-alcohol">
-                                    <!-- Populated dynamically -->
-                                </ul>
-                            </div>
-                            <!-- Mixers & Non-Alcohol Section -->
-                            <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5 space-y-2">
-                                <span class="text-xs font-bold text-gray-300 block uppercase border-b border-white/5 pb-1">Mixers, NA & snacks</span>
-                                <ul class="space-y-1 text-xs font-mono text-gray-400" id="shopping-na">
-                                    <!-- Populated dynamically -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- TAB 4: CSV IMPORT & SYNC -->
-            <div id="tab-content-sync" class="tab-pane hidden space-y-6">
-                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
-                    <div class="space-y-2">
-                        <h2 class="font-arena text-2xl tracking-wide text-white">
-                            🔄 Google Form Survey Synchronization
-                        </h2>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Keep player skill ratings, alcohol choices, and dietary requests perfectly synced! Export your official Google Sheet/Form responses as a <strong class="text-gray-200">.csv</strong> file and upload it below. The system automatically reconciles the entries against the team rosters.
-                        </p>
-                    </div>
-
-                    <!-- Drag & Drop Zone -->
-                    <div id="drop-zone" class="border-2 border-dashed border-knicks-blue bg-black/40 hover:bg-black/60 transition-all rounded-2xl p-8 text-center cursor-pointer flex flex-col items-center justify-center gap-3">
-                        <span class="text-4xl">📂</span>
-                        <div>
-                            <span class="text-sm font-bold text-gray-200 block">Drag & Drop survey .csv file here</span>
-                            <span class="text-xs text-gray-400 block mt-1">or click to browse your local computer</span>
-                        </div>
-                        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleFileSelect(event)" />
-                    </div>
-
-                    <!-- Fallback Paste Text Box -->
-                    <div class="space-y-2">
-                        <label class="text-xs font-mono text-gray-400 block">Or, paste raw CSV contents here:</label>
-                        <textarea id="raw-csv-paste" placeholder="Timestamp,What is your name?,..." class="w-full h-32 bg-black/80 rounded-xl border border-white/10 p-3 text-xs font-mono text-gray-300 focus:outline-none focus:border-knicks-orange"></textarea>
-                        <button onclick="parsePasteCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-lg font-mono font-bold transition-all border border-white/10 cursor-pointer animate-pulse">
-                            Process Pasted Data
-                        </button>
-                    </div>
-
-                    <!-- Import logs and status -->
-                    <div class="bg-black/60 p-4 rounded-xl border border-white/5 space-y-2">
-                        <span class="text-xs font-mono text-gray-400 block uppercase">Parse Synchronization Log</span>
-                        <div id="parse-logs" class="text-[10px] font-mono text-gray-500 h-24 overflow-y-auto space-y-1 bg-black/40 p-2 rounded border border-white/5">
-                            System Idle. Ready to parse responses.
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -681,7 +558,7 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'zzbachelorcup';
         let initialLoadDone = false;
 
-        // Firebase Auth initialization (conforming to strict ruleset)
+        // Firebase Auth initialization
         const initAuthAndSync = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -736,7 +613,7 @@
 
         // Sync local variables automatically with Firebase Firestore
         function setupRealtimeFirestoreSync() {
-            const stateCollectionName = 'state'; // Collection name variable
+            const stateCollectionName = 'state';
             const competitorsDocRef = doc(db, 'artifacts', appId, 'public', 'data', stateCollectionName, 'competitors');
             const eventScoresDocRef = doc(db, 'artifacts', appId, 'public', 'data', stateCollectionName, 'eventScores');
 
@@ -745,7 +622,6 @@
                 if (snap.exists()) {
                     competitors = snap.data().list;
                     renderRosters();
-                    renderCommishDashboard();
                     calculateArenaStandings();
                 } else {
                     // Seed initial state in DB
@@ -896,7 +772,7 @@
             saveEventScoresStateToCloud(); // Sync seedings with cloud instantly
         }
 
-        // Live score editing triggers real-time cloud write to make sure everyone is synced up
+        // Live score editing triggers real-time cloud write
         function updateLiveMatchScores() {
             recalculateNodePaths();
             saveEventScoresStateToCloud();
@@ -1293,114 +1169,6 @@
             document.getElementById('player-modal').classList.add('hidden');
         }
 
-        // Commissioner dashboard lists
-        function renderCommishDashboard() {
-            const soberCount = competitors.filter(c => {
-                const hydStr = (c.hydration || "").toLowerCase();
-                return hydStr.includes("zero alcohol") || hydStr.includes("sober sniper") || hydStr.includes("dedicated athlete");
-            }).length;
-
-            const porkCount = competitors.filter(c => {
-                const dietStr = (c.dietary || "").toLowerCase();
-                return dietStr.includes("pork") || dietStr.includes("no pork");
-            }).length;
-
-            const specialCount = competitors.filter(c => {
-                const dietStr = (c.dietary || "").toLowerCase();
-                return dietStr.includes("kosher") || dietStr.includes("jewish") || dietStr.includes("lactose") || dietStr.includes("cilantro");
-            }).length;
-
-            document.getElementById('commish-sober-count').innerText = soberCount;
-            document.getElementById('commish-pork-count').innerText = porkCount;
-            document.getElementById('commish-special-count').innerText = specialCount;
-
-            const dietList = document.getElementById('dietary-list-commish');
-            const dietRestrictedCompetitors = competitors.filter(c => c.dietary && c.dietary !== "None." && c.dietary !== "None" && c.dietary !== "");
-            
-            if (dietRestrictedCompetitors.length) {
-                dietList.innerHTML = dietRestrictedCompetitors.map(c => `
-                    <div class="py-2 flex items-start justify-between gap-4 font-mono">
-                        <strong class="text-white truncate min-w-[100px]">${c.name}:</strong>
-                        <span class="text-gray-400 text-left text-[11px]">${c.dietary}</span>
-                    </div>
-                `).join('');
-            } else {
-                dietList.innerHTML = '<span class="text-xs text-gray-500 py-3 block italic">No dietary restrictions currently flagged.</span>';
-            }
-
-            const hydList = document.getElementById('hydration-list-commish');
-            hydList.innerHTML = competitors.map(c => `
-                <div class="py-2 flex items-center justify-between gap-4 font-mono">
-                    <strong class="text-white truncate min-w-[100px]">${c.name}:</strong>
-                    <span class="text-gray-400 text-[11px] text-right truncate max-w-[200px]">${c.hydration.split(':')[0]}</span>
-                </div>
-            `).join('');
-
-            // Automatic Liquor lists compilations
-            const alcoholCounts = {};
-            const naCounts = {};
-
-            competitors.forEach(c => {
-                if (c.alcohol) {
-                    c.alcohol.forEach(a => {
-                        if (a && !a.includes("None")) {
-                            alcoholCounts[a] = (alcoholCounts[a] || 0) + 1;
-                        }
-                    });
-                }
-                if (c.nonAlcoholic) {
-                    c.nonAlcoholic.forEach(na => {
-                        if (na) {
-                            naCounts[na] = (naCounts[na] || 0) + 1;
-                        }
-                    });
-                }
-            });
-
-            const shoppingAlcoholList = document.getElementById('shopping-alcohol');
-            const sortedAlcohol = Object.entries(alcoholCounts).sort((a,b) => b[1] - a[1]);
-            if (sortedAlcohol.length) {
-                shoppingAlcoholList.innerHTML = sortedAlcohol.map(([item, votes]) => `
-                    <li class="flex justify-between items-center py-1 border-b border-white/5">
-                        <span class="truncate pr-2">🍻 ${item}</span>
-                        <span class="text-knicks-orange font-bold font-mono">${votes} request${votes > 1 ? 's' : ''}</span>
-                    </li>
-                `).join('');
-            } else {
-                shoppingAlcoholList.innerHTML = '<span class="text-xs text-gray-500">No alcohol requests found.</span>';
-            }
-
-            const shoppingNaList = document.getElementById('shopping-na');
-            const sortedNa = Object.entries(naCounts).sort((a,b) => b[1] - a[1]);
-            
-            const explicitNotes = [];
-            competitors.forEach(c => {
-                const d = (c.dietary || "").toLowerCase();
-                if (d.includes("oreo")) explicitNotes.push("Salah requested Oreos 🍪");
-                if (d.includes("na beer") || d.includes("0-proof")) explicitNotes.push("Sam F requested 0-Proof/NA Beer 🍺");
-            });
-
-            let naListHtml = sortedNa.map(([item, votes]) => `
-                <li class="flex justify-between items-center py-1 border-b border-white/5">
-                    <span class="truncate pr-2">🥤 ${item}</span>
-                    <span class="text-sky-400 font-bold font-mono">${votes} request${votes > 1 ? 's' : ''}</span>
-                </li>
-            `).join('');
-
-            if (explicitNotes.length) {
-                naListHtml += `<li class="mt-3 pt-2 border-t border-white/10 text-[10px] text-yellow-400 space-y-1 block font-sans">
-                    <strong>⚠️ Explicit Commissioner Requests:</strong>
-                    ${explicitNotes.map(note => `<div class="font-mono text-gray-300">• ${note}</div>`).join('')}
-                </li>`;
-            }
-
-            if (sortedNa.length || explicitNotes.length) {
-                shoppingNaList.innerHTML = naListHtml;
-            } else {
-                shoppingNaList.innerHTML = '<span class="text-xs text-gray-500">No mixers or snacks preferences recorded.</span>';
-            }
-        }
-
         // Dialog box toaster feedback notification
         function showToast(message) {
             const box = document.getElementById('toast-box');
@@ -1416,175 +1184,6 @@
             document.getElementById('toast-box').classList.add('hidden');
         }
 
-        // CSV parsing algorithms
-        function parseCSV(text) {
-            let p = 0;
-            let r = [];
-            let q = false;
-            let row = [''];
-            while (p < text.length) {
-                let c = text[p];
-                if (c === '"') {
-                    q = !q;
-                } else if (c === ',' && !q) {
-                    row.push('');
-                } else if ((c === '\r' || c === '\n') && !q) {
-                    if (c === '\r' && text[p+1] === '\n') { p++; }
-                    r.push(row);
-                    row = [''];
-                } else {
-                    row[row.length - 1] += c;
-                }
-                p++;
-            }
-            if (row.length > 1 || row[0] !== '') {
-                r.push(row);
-            }
-            return r;
-        }
-
-        // Sync uploaded google form csv file
-        function syncCSVData(csvRows) {
-            const logEl = document.getElementById('parse-logs');
-            logEl.innerHTML = "";
-
-            if (csvRows.length < 2) {
-                logEl.innerHTML = "❌ CSV file does not contain enough records (Header row + Data expected).";
-                return;
-            }
-
-            const header = csvRows[0].map(h => h.trim());
-            
-            const nameIndex = header.findIndex(h => h.toLowerCase().includes("name"));
-            const hydrationIndex = header.findIndex(h => h.toLowerCase().includes("hydration"));
-            const poolIndex = header.findIndex(h => h.toLowerCase().includes("pool"));
-            const hockeyIndex = header.findIndex(h => h.toLowerCase().includes("hockey"));
-            const foosballIndex = header.findIndex(h => h.toLowerCase().includes("foosball"));
-            const dartsIndex = header.findIndex(h => h.toLowerCase().includes("darts"));
-            const volleyIndex = header.findIndex(h => h.toLowerCase().includes("volleyball"));
-            const pongIndex = header.findIndex(h => h.toLowerCase().includes("pong"));
-            const flipIndex = header.findIndex(h => h.toLowerCase().includes("flip cup"));
-            const cannonballIndex = header.findIndex(h => h.toLowerCase().includes("cannonball"));
-            const cornholeIndex = header.findIndex(h => h.toLowerCase().includes("cornhole"));
-            const smashIndex = header.findIndex(h => h.toLowerCase().includes("smash"));
-            const alcIndex = header.findIndex(h => h.toLowerCase().includes("alcohol preferences"));
-            const naIndex = header.findIndex(h => h.toLowerCase().includes("non-alcoholic"));
-            const dietaryIndex = header.findIndex(h => h.toLowerCase().includes("allergies") || h.toLowerCase().includes("restrictions") || h.toLowerCase().includes("dietary"));
-
-            let updateCount = 0;
-
-            for (let i = 1; i < csvRows.length; i++) {
-                const row = csvRows[i];
-                if (row.length < 2) continue;
-
-                const rawName = row[nameIndex] || "";
-                if (!rawName) continue;
-
-                let match = competitors.find(comp => {
-                    const cNameLower = comp.name.toLowerCase();
-                    const rNameLower = rawName.toLowerCase();
-                    return cNameLower.includes(rNameLower) || rNameLower.includes(cNameLower);
-                });
-
-                if (match) {
-                    if (hydrationIndex !== -1) match.hydration = row[hydrationIndex].trim();
-                    
-                    const updateRating = (colIndex, fieldKey) => {
-                        if (colIndex !== -1 && row[colIndex]) {
-                            const val = parseInt(row[colIndex]);
-                            if (!isNaN(val)) {
-                                match.ratings[fieldKey] = val;
-                            }
-                        }
-                    };
-
-                    updateRating(poolIndex, 'pool');
-                    updateRating(hockeyIndex, 'air_hockey');
-                    updateRating(foosballIndex, 'foosball');
-                    updateRating(dartsIndex, 'darts');
-                    updateRating(volleyIndex, 'volleyball');
-                    updateRating(pongIndex, 'beer_pong');
-                    updateRating(flipIndex, 'flip_cup');
-                    updateRating(cannonballIndex, 'cannonball');
-                    updateRating(cornholeIndex, 'cornhole');
-
-                    if (smashIndex !== -1 && row[smashIndex]) {
-                        const smashText = row[smashIndex];
-                        if (smashText.includes("Novice") || smashText.includes("novice")) {
-                            match.ratings.smash = 1;
-                            match.smash = "Novice";
-                        } else if (smashText.includes("Comfortable") || smashText.includes("comfortable")) {
-                            match.ratings.smash = 3;
-                            match.smash = "Comfortable";
-                        } else if (smashText.includes("Pro") || smashText.includes("pro")) {
-                            match.ratings.smash = 4;
-                            match.smash = "Pro";
-                        } else if (smashText.includes("Super Pro") || smashText.includes("super pro") || smashText.includes("Elite")) {
-                            match.ratings.smash = 5;
-                            match.smash = "Super Pro";
-                        } else {
-                            match.ratings.smash = 2;
-                            match.smash = "Casual";
-                        }
-                    }
-
-                    if (alcIndex !== -1 && row[alcIndex]) {
-                        match.alcohol = row[alcIndex].split(',').map(s => s.trim().replace(/"/g, ''));
-                    }
-
-                    if (naIndex !== -1 && row[naIndex]) {
-                        match.nonAlcoholic = row[naIndex].split(',').map(s => s.trim().replace(/"/g, ''));
-                    }
-
-                    if (dietaryIndex !== -1 && row[dietaryIndex]) {
-                        match.dietary = row[dietaryIndex].trim();
-                    }
-
-                    updateCount++;
-                    logEl.innerHTML += `<div>✅ Imported survey preferences for <strong class="text-white">${match.name}</strong></div>`;
-                } else {
-                    logEl.innerHTML += `<div class="text-amber-500">⚠️ Could not resolve competitor named: "${rawName}"</div>`;
-                }
-            }
-
-            logEl.innerHTML += `<div class="text-emerald-400 font-bold mt-2">🎉 CSV Parse finished! Updated ${updateCount} player profiles.</div>`;
-            
-            // Push overall updated dataset directly back to Firestore
-            saveCompetitorsStateToCloud().then(() => {
-                showToast(`🔄 Synchronized database! Competitor sheets and rosters updated successfully.`);
-                renderRosters();
-                calculateArenaStandings();
-                renderCommishDashboard();
-            });
-        }
-
-        // CSV helper bindings
-        function handleFileSelect(evt) {
-            const file = evt.target.files[0];
-            if (!file) return;
-            readCSVFile(file);
-        }
-
-        function readCSVFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const parsed = parseCSV(text);
-                syncCSVData(parsed);
-            };
-            reader.readAsText(file);
-        }
-
-        function parsePasteCSV() {
-            const rawText = document.getElementById('raw-csv-paste').value;
-            if (!rawText.trim()) {
-                showToast("⚠️ Paste raw CSV spreadsheet data before processing.");
-                return;
-            }
-            const parsed = parseCSV(rawText);
-            syncCSVData(parsed);
-        }
-
         // Set module scope functions to window scope so that inline html button actions execute flawlessly
         window.switchTab = switchTab;
         window.selectEvent = selectEvent;
@@ -1596,31 +1195,7 @@
         window.filterTeams = filterTeams;
         window.openPlayerModal = openPlayerModal;
         window.closePlayerModal = closePlayerModal;
-        window.handleFileSelect = handleFileSelect;
-        window.parsePasteCSV = parsePasteCSV;
         window.hideToast = hideToast;
-
-        // Setup Drag & Drop listeners
-        const dropZone = document.getElementById('drop-zone');
-        dropZone.addEventListener('click', () => document.getElementById('csv-file-input').click());
-        
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('bg-black/80', 'border-knicks-orange');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('bg-black/80', 'border-knicks-orange');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('bg-black/80', 'border-knicks-orange');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                readCSVFile(file);
-            }
-        });
     </script>
 </body>
 </html>
