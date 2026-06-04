@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +11,7 @@
 https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
 
 <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
+https://fonts.googleapis.com
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -84,7 +86,9 @@ body { font-family: 'Inter', sans-serif; background:#060b19; }
 
 /* ✅ IMPORT YOUR REAL MODULES */
 import './js/constants.js';
-import './js/firebase/sync.js';
+// Temporarily disabled because js/firebase/config.js is missing in GitHub Pages deployment.
+// Re-enable after creating js/firebase/config.js with your Firebase exports.
+// import './js/firebase/sync.js';
 import './js/ui/tabs.js';
 import './js/ui/notifications.js';
 import './js/ui/accessibility.js';
