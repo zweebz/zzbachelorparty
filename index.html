@@ -171,15 +171,17 @@
                             <h4 class="font-arena text-sm text-gray-400 tracking-wider">Tournament Tree</h4>
                             
                             <!-- Visual Columns Wrapper -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                            <div id="bracket-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 relative min-h-[460px]">
                                 
+                                <!-- Dynamic SVG Connector Lines (Option A: Desktop Only overlay) -->
+                                <svg id="bracket-svg" class="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style="z-index: 0;"></svg>
+
                                 <!-- Column 1: Semifinals -->
-                                <div class="space-y-6 flex flex-col justify-around">
+                                <div class="space-y-6 flex flex-col justify-around relative z-10">
                                     <div class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Semifinals</div>
                                     
                                     <!-- SF Match 1 -->
-                                    <div class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
-                                        <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-[1px] bg-white/20 hidden md:block"></div>
+                                    <div id="sf1-card" class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all">
                                         <div class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #1</div>
                                         
                                         <!-- Team 1 Row -->
@@ -195,8 +197,7 @@
                                     </div>
 
                                     <!-- SF Match 2 -->
-                                    <div class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
-                                        <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-[1px] bg-white/20 hidden md:block"></div>
+                                    <div id="sf2-card" class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all">
                                         <div class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #2</div>
                                         
                                         <!-- Team 3 Row -->
@@ -213,10 +214,10 @@
                                 </div>
 
                                 <!-- Column 2: Third Place Match -->
-                                <div class="flex flex-col justify-center">
+                                <div class="flex flex-col justify-center relative z-10">
                                     <div class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Third Place Match</div>
                                     
-                                    <div class="bg-slate-950/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
+                                    <div id="third-card" class="bg-slate-950/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all">
                                         <div class="text-[9px] font-mono text-sky-400 uppercase tracking-wider">Bronze Medal Game</div>
                                         
                                         <div class="flex items-center justify-between gap-2">
@@ -231,10 +232,10 @@
                                 </div>
 
                                 <!-- Column 3: Grand Finals -->
-                                <div class="flex flex-col justify-center">
+                                <div class="flex flex-col justify-center relative z-10">
                                     <div class="text-xs font-mono tracking-wider font-bold text-yellow-400 border-b border-yellow-400/20 pb-1 mb-2">Championship</div>
                                     
-                                    <div class="bg-gradient-to-b from-slate-900 to-black rounded-xl p-4 border-2 border-yellow-500/40 space-y-3 shadow-xl">
+                                    <div id="finals-card" class="bg-gradient-to-b from-slate-900 to-black rounded-xl p-4 border-2 border-yellow-500/40 space-y-3 shadow-xl transition-all">
                                         <div class="text-[9px] font-mono text-yellow-400 uppercase tracking-wider flex items-center gap-1">🏆 Gold Medal Game</div>
                                         
                                         <div class="flex items-center justify-between gap-2">
@@ -578,6 +579,7 @@
         window.onload = function() {
             initEventScoresPlaceholder();
             initAuthAndSync();
+            window.addEventListener('resize', drawBracketLines);
         };
 
         // Create default empty schema placeholder
@@ -683,6 +685,97 @@
             const targetBtn = document.getElementById(`tab-btn-${tabId}`);
             targetBtn.classList.add('bg-knicks-blue', 'text-white', 'shadow-md');
             targetBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5');
+
+            if (tabId === 'scoring') {
+                // Let DOM render fully before measuring client dimensions
+                setTimeout(drawBracketLines, 100);
+            }
+        }
+
+        // Classic tournament connecting pathways (Option A)
+        function drawBracketLines() {
+            const svg = document.getElementById('bracket-svg');
+            const container = document.getElementById('bracket-container');
+            const sf1 = document.getElementById('sf1-card');
+            const sf2 = document.getElementById('sf2-card');
+            const third = document.getElementById('third-card');
+            const finals = document.getElementById('finals-card');
+
+            // Don't execute if elements aren't loaded or screen is mobile-stacked
+            if (!svg || !container || !sf1 || !sf2 || !third || !finals) return;
+            if (window.innerWidth < 768) {
+                svg.innerHTML = '';
+                return;
+            }
+
+            // Clear previous drawings
+            svg.innerHTML = '';
+
+            const containerRect = container.getBoundingClientRect();
+            
+            const getBoxCoords = (el) => {
+                const rect = el.getBoundingClientRect();
+                return {
+                    left: rect.left - containerRect.left,
+                    right: rect.right - containerRect.left,
+                    top: rect.top - containerRect.top,
+                    bottom: rect.bottom - containerRect.top,
+                    width: rect.width,
+                    height: rect.height,
+                    centerY: (rect.top + rect.bottom) / 2 - containerRect.top
+                };
+            };
+
+            const c1 = getBoxCoords(sf1);
+            const c2 = getBoxCoords(sf2);
+            const c3 = getBoxCoords(third);
+            const c4 = getBoxCoords(finals);
+
+            // 1. Draw beautiful orthogonal path for Winners moving to Gold Medal match (c4)
+            // Meets at a horizontal mid-point halfway between SF right edges and Gold left edge
+            const midX_winners = c1.right + (c4.left - c1.right) * 0.45;
+
+            // SF1 to Finals path
+            const pathWinner1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathWinner1.setAttribute("d", `M ${c1.right} ${c1.centerY} H ${midX_winners} V ${c4.centerY} H ${c4.left}`);
+            pathWinner1.setAttribute("stroke", "#F58426"); // Knicks Orange
+            pathWinner1.setAttribute("stroke-width", "2");
+            pathWinner1.setAttribute("fill", "none");
+            pathWinner1.setAttribute("opacity", "0.6");
+            svg.appendChild(pathWinner1);
+
+            // SF2 to Finals path
+            const pathWinner2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathWinner2.setAttribute("d", `M ${c2.right} ${c2.centerY} H ${midX_winners} V ${c4.centerY} H ${c4.left}`);
+            pathWinner2.setAttribute("stroke", "#F58426"); // Knicks Orange
+            pathWinner2.setAttribute("stroke-width", "2");
+            pathWinner2.setAttribute("fill", "none");
+            pathWinner2.setAttribute("opacity", "0.6");
+            svg.appendChild(pathWinner2);
+
+            // 2. Draw dashed paths representing Semifinal losers dropping down to Bronze Match (c3)
+            // Meets at a horizontal mid-point halfway between SF right edges and Bronze left edge
+            const midX_losers = c1.right + (c3.left - c1.right) * 0.55;
+
+            // SF1 to Third Place path (Dashed)
+            const pathLoser1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathLoser1.setAttribute("d", `M ${c1.right} ${c1.centerY} H ${midX_losers} V ${c3.centerY} H ${c3.left}`);
+            pathLoser1.setAttribute("stroke", "#006BB6"); // Knicks Blue
+            pathLoser1.setAttribute("stroke-width", "2");
+            pathLoser1.setAttribute("stroke-dasharray", "4,4");
+            pathLoser1.setAttribute("fill", "none");
+            pathLoser1.setAttribute("opacity", "0.45");
+            svg.appendChild(pathLoser1);
+
+            // SF2 to Third Place path (Dashed)
+            const pathLoser2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathLoser2.setAttribute("d", `M ${c2.right} ${c2.centerY} H ${midX_losers} V ${c3.centerY} H ${c3.left}`);
+            pathLoser2.setAttribute("stroke", "#006BB6"); // Knicks Blue
+            pathLoser2.setAttribute("stroke-width", "2");
+            pathLoser2.setAttribute("stroke-dasharray", "4,4");
+            pathLoser2.setAttribute("fill", "none");
+            pathLoser2.setAttribute("opacity", "0.45");
+            svg.appendChild(pathLoser2);
         }
 
         // Event panel logic
@@ -826,6 +919,9 @@
             document.getElementById('third-t2').innerText = sf2Loser;
             document.getElementById('finals-t1').innerText = sf1Winner;
             document.getElementById('finals-t2').innerText = sf2Winner;
+
+            // Render/align custom connectors on screen
+            setTimeout(drawBracketLines, 50);
         }
 
         // Commit and Lock Event rankings
@@ -1196,6 +1292,7 @@
         window.openPlayerModal = openPlayerModal;
         window.closePlayerModal = closePlayerModal;
         window.hideToast = hideToast;
+        window.drawBracketLines = drawBracketLines;
     </script>
 </body>
 </html>
