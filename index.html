@@ -1,482 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
-    <!-- Tailwind CSS v4 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #060b19;
-        }
-        .font-arena {
-            font-family: 'Bungee', cursive;
-        }
-        .knicks-orange {
-            color: #F58426;
-        }
-        .knicks-blue {
-            color: #006BB6;
-        }
-        .bg-knicks-blue {
-            background-color: #006BB6;
-        }
-        .bg-knicks-orange {
-            background-color: #F58426;
-        }
-        .border-knicks-orange {
-            border-color: #F58426;
-        }
-        .border-knicks-blue {
-            border-color: #006BB6;
-        }
-        /* Custom scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0B132B;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #F58426;
-        }
-        /* Bracket glow styles */
-        .match-card-glow {
-            box-shadow: 0 0 15px rgba(245, 132, 38, 0.15);
-        }
-        .winner-glow {
-            box-shadow: 0 0 20px rgba(245, 132, 38, 0.35);
-            border-color: rgba(245, 132, 38, 0.6) !important;
-        }
-        /* SVG path transitions */
-        svg path {
-            transition: stroke 0.3s, stroke-width 0.3s;
-        }
-        /* Screen reader only */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-        .focus\:not-sr-only:focus {
-            position: static;
-            width: auto;
-            height: auto;
-            padding: inherit;
-            margin: inherit;
-            overflow: visible;
-            clip: auto;
-            white-space: normal;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
+
+<!-- Tailwind -->
+https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Inter', sans-serif; background:#060b19; }
+.font-arena { font-family:'Bungee', cursive; }
+.knicks-orange { color:#F58426; }
+.knicks-blue { color:#006BB6; }
+.bg-knicks-blue { background:#006BB6; }
+.bg-knicks-orange { background:#F58426; }
+.border-knicks-orange { border-color:#F58426; }
+.border-knicks-blue { border-color:#006BB6; }
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#0B132B}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#F58426}
+
+.match-card-glow{box-shadow:0 0 15px rgba(245,132,38,.15)}
+.winner-glow{box-shadow:0 0 20px rgba(245,132,38,.35);border-color:rgba(245,132,38,.6)!important}
+
+svg path{transition:stroke .3s,stroke-width .3s}
+
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)}
+.focus\:not-sr-only:focus{position:static;width:auto;height:auto;clip:auto}
+</style>
 </head>
-<body class="text-gray-100 min-h-screen pb-12 flex flex-col justify-between">
 
-    <!-- Skip to main content link for accessibility -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:bg-knicks-blue focus:text-white focus:p-3 focus:absolute focus:top-0 focus:left-0">Skip to main content</a>
+<body class="text-gray-100 min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <header class="relative bg-black text-center py-10 px-4 border-b-8 border-knicks-orange shadow-2xl overflow-hidden">
-        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#006BB6_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
-        <div class="relative z-10 max-w-7xl mx-auto flex flex-col items-center justify-center">
-            
-            <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
-                <span class="inline-flex items-center gap-2 bg-knicks-blue/90 text-white font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase border border-white/20 shadow-lg" role="status" aria-live="polite">
-                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full inline-block animate-ping"></span> Live MSG Arena Feed
-                </span>
-                <!-- Connection Status Badge -->
-                <span id="db-status-badge" class="inline-flex items-center gap-1.5 bg-slate-900 text-slate-400 font-mono font-bold px-3 py-1.5 rounded-full text-[10px] tracking-wider uppercase border border-slate-700" role="status" aria-live="polite">
-                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span> Connecting to Live DB...
-                </span>
-            </div>
+<a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
 
-            <h1 class="font-arena text-4xl sm:text-6xl md:text-7xl tracking-tight text-white drop-shadow-[0_4px_0_#006BB6] uppercase leading-tight">
-                ZZ BACHELOR <span class="knicks-orange">CUP</span> 2026
-            </h1>
-            <p class="text-gray-400 mt-3 max-w-2xl mx-auto font-medium text-xs sm:text-sm md:text-base tracking-wide">
-                Welcome to The Garden. 4 Teams. 12 Competitors. 10 Championship Events. 
-                Complete live rating profiles, real-time standings calculators, and commissioner toolkits.
-            </p>
-        </div>
-    </header>
+<header class="bg-black py-8 border-b-8 border-knicks-orange text-center">
+<h1 class="font-arena text-4xl sm:text-6xl">ZZ BACHELOR <span class="knicks-orange">CUP</span> 2026</h1>
+<p class="text-gray-400 mt-2 text-sm">MSG Arena Live Tracker</p>
+</header>
 
-    <!-- Main Content -->
-    <main id="main-content" class="max-w-7xl w-full mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
-        
-        <!-- Left Workstation -->
-        <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Tab Navigation -->
-            <nav class="bg-slate-900/80 p-1.5 rounded-xl border border-white/5 flex flex-wrap gap-1 shadow-lg backdrop-blur-md" role="tablist" aria-label="Content sections">
-                <button 
-                    id="tab-btn-teams" 
-                    data-tab-btn="teams" 
-                    class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 bg-knicks-blue text-white shadow-md" 
-                    role="tab" 
-                    aria-selected="true" 
-                    aria-controls="tab-content-teams"
-                    aria-label="Teams and rosters tab">
-                    🏆 TEAMS & ROSTERS
-                </button>
-                <button 
-                    id="tab-btn-scoring" 
-                    data-tab-btn="scoring" 
-                    class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5" 
-                    role="tab" 
-                    aria-selected="false" 
-                    aria-controls="tab-content-scoring"
-                    aria-label="Events and brackets tab">
-                    ⚔️ EVENTS & BRACKETS
-                </button>
-            </nav>
+<main id="main" class="max-w-7xl mx-auto w-full px-4 mt-6 grid lg:grid-cols-3 gap-6">
 
-            <!-- Toast Notification -->
-            <div id="toast-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl flex items-center justify-between transition-all duration-300" role="alert" aria-live="assertive">
-                <span id="toast-message" class="text-xs font-mono"></span>
-                <button id="toast-hide" class="text-emerald-300 hover:text-white font-bold ml-2" aria-label="Close notification">×</button>
-            </div>
+<div class="lg:col-span-2 space-y-6">
 
-            <!-- TAB 1: TEAMS & PLAYERS -->
-            <section id="tab-content-teams" data-tab-pane="teams" class="tab-pane space-y-6" role="tabpanel" aria-labelledby="tab-btn-teams">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h2 class="font-arena text-2xl tracking-wide text-white flex items-center gap-2">
-                        <span class="inline-block w-3 h-6 bg-knicks-orange rounded-sm" aria-hidden="true"></span> Competitor sheets
-                    </h2>
-                    <div class="flex items-center gap-2 text-xs">
-                        <label for="team-filter" class="text-gray-400">Filter Roster:</label>
-                        <select id="team-filter" class="bg-slate-900 border border-white/10 rounded-lg px-3 py-1 text-gray-200 font-mono focus:border-knicks-orange focus:outline-none" aria-label="Filter teams by name">
-                            <option value="all">All Squads</option>
-                            <option value="The OGs">The OGs (Orange)</option>
-                            <option value="The Harts">The Harts (Blue)</option>
-                            <option value="The Brunsons">The Brunsons (Green)</option>
-                            <option value="The KATs">The KATs (Purple)</option>
-                        </select>
-                    </div>
-                </div>
+<nav class="flex gap-2 bg-slate-900 p-2 rounded-xl">
+<button class="tab-btn bg-knicks-blue px-4 py-2 rounded" data-tab="teams">Teams</button>
+<button class="tab-btn text-gray-400" data-tab="events">Events</button>
+</nav>
 
-                <!-- Teams Display Grid -->
-                <div id="rosters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="text-center py-12 text-gray-500 font-mono text-sm col-span-2">
-                        Loading competitor rosters...
-                    </div>
-                </div>
-            </section>
+<section id="teams" class="tab-pane">
+<h2 class="font-arena text-xl mb-4">Teams</h2>
+<div id="rosters-grid" class="grid md:grid-cols-2 gap-4">
+<div class="text-center text-gray-500">Loading...</div>
+</div>
+</section>
 
-            <!-- TAB 2: SCORING & BRACKETS FOR EACH EVENT -->
-            <section id="tab-content-scoring" data-tab-pane="scoring" class="tab-pane hidden space-y-6" role="tabpanel" aria-labelledby="tab-btn-scoring">
-                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
-                    
-                    <!-- Event Selector Section -->
-                    <div class="space-y-3">
-                        <h2 class="font-arena text-xl tracking-wide text-white flex items-center gap-2">
-                            🏈 SELECT CHAMPIONSHIP EVENT
-                        </h2>
-                        <p class="text-xs text-gray-400 font-mono">Select one of the 10 games to enter live scoresheets, play match-ups, or simulate outcomes.</p>
-                        
-                        <!-- Mini Icons Selector Grid -->
-                        <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" id="event-selector-grid" role="group" aria-label="Event selection buttons">
-                            <!-- Populated dynamically via JS -->
-                        </div>
-                    </div>
+<section id="events" class="tab-pane hidden">
+<h2 class="font-arena text-xl mb-4">Bracket</h2>
 
-                    <!-- Highlighted Event Card and Bracket Workspace -->
-                    <div id="active-event-card" class="bg-black/40 border border-white/5 rounded-xl p-5 space-y-6">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/5 pb-4 gap-4">
-                            <div class="flex items-center gap-3">
-                                <span id="active-event-icon" class="text-4xl" aria-hidden="true">🎱</span>
-                                <div>
-                                    <h3 id="active-event-name" class="font-arena text-2xl text-white tracking-wide">Pool (8-Ball)</h3>
-                                    <span class="text-[10px] font-mono uppercase tracking-wider bg-white/5 text-gray-400 px-2 py-0.5 rounded" id="active-event-meta">
-                                        Standard Bracket • Weight 1.0x
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button 
-                                    class="bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors" 
-                                    aria-label="Run simulation for current event">
-                                    🎲 Simulation Bot
-                                </button>
-                                <button 
-                                    class="bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors" 
-                                    aria-label="Reset scores for current event">
-                                    🗑️ Reset Event
-                                </button>
-                            </div>
-                        </div>
+<div class="grid md:grid-cols-3 gap-4 relative">
+<svg id="bracket-svg" class="absolute inset-0 w-full h-full pointer-events-none"></svg>
 
-                        <!-- 4-Team Championship Bracket Visuals -->
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-arena text-sm text-gray-400 tracking-wider">Tournament Tree</h4>
-                                <span class="text-[10px] font-mono text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20" role="note">💡 Click Crown (👑) to set winner instantly</span>
-                            </div>
-                            
-                            <!-- Visual Columns Wrapper -->
-                            <div id="bracket-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 relative min-h-[460px]">
-                                
-                                <!-- Dynamic SVG Connector Lines -->
-                                <svg id="bracket-svg" class="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style="z-index: 0;" aria-hidden="true"></svg>
+<div>
+<h3 class="text-gray-400 text-xs mb-2">Semifinals</h3>
+<div id="sf1" class="p-2 bg-slate-900 rounded">
+<select id="sf1-t1"></select>
+<input id="sf1-s1" type="number" value="0">
+<select id="sf1-t2"></select>
+<input id="sf1-s2" type="number" value="0">
+</div>
+</div>
 
-                                <!-- Column 1: Semifinals -->
-                                <div class="space-y-6 flex flex-col justify-around relative z-10">
-                                    <h5 class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Semifinals</h5>
-                                    
-                                    <!-- SF Match 1 -->
-                                    <div id="sf1-card" class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all" role="group" aria-labelledby="sf1-title">
-                                        <div id="sf1-title" class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #1</div>
-                                        
-                                        <!-- Team 1 Row -->
-                                        <div data-match-row="t1" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <select id="sf1-t1" data-select-team="sf1:t1" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-1/2 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 1 Team 1">
-                                            </select>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="sf1-s1" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Semifinal 1 Team 1 score">−</button>
-                                                <input id="sf1-s1" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-knicks-orange rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 1 Team 1 score">
-                                                <button data-adjust-score="sf1-s1" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Semifinal 1 Team 1 score">+</button>
-                                                <button data-set-winner="sf1:t1" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 1 as Semifinal 1 winner">👑</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Team 2 Row -->
-                                        <div data-match-row="t2" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <select id="sf1-t2" data-select-team="sf1:t2" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-1/2 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 1 Team 2">
-                                            </select>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="sf1-s2" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Semifinal 1 Team 2 score">−</button>
-                                                <input id="sf1-s2" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-knicks-orange rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 1 Team 2 score">
-                                                <button data-adjust-score="sf1-s2" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Semifinal 1 Team 2 score">+</button>
-                                                <button data-set-winner="sf1:t2" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 2 as Semifinal 1 winner">👑</button>
-                                            </div>
-                                        </div>
-                                    </div>
+<div>
+<h3 class="text-gray-400 text-xs mb-2">Final</h3>
+<div id="finals" class="p-2 bg-slate-900 rounded">
+<span id="finals-t1">TBD</span>
+<input id="finals-s1" type="number" value="0">
+<span id="finals-t2">TBD</span>
+<input id="finals-s2" type="number" value="0">
+</div>
+</div>
 
-                                    <!-- SF Match 2 -->
-                                    <div id="sf2-card" class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all" role="group" aria-labelledby="sf2-title">
-                                        <div id="sf2-title" class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #2</div>
-                                        
-                                        <!-- Team 1 Row -->
-                                        <div data-match-row="t1" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <select id="sf2-t1" data-select-team="sf2:t1" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-1/2 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 2 Team 1">
-                                            </select>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="sf2-s1" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Semifinal 2 Team 1 score">−</button>
-                                                <input id="sf2-s1" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-knicks-orange rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 2 Team 1 score">
-                                                <button data-adjust-score="sf2-s1" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Semifinal 2 Team 1 score">+</button>
-                                                <button data-set-winner="sf2:t1" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 1 as Semifinal 2 winner">👑</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Team 2 Row -->
-                                        <div data-match-row="t2" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <select id="sf2-t2" data-select-team="sf2:t2" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-1/2 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 2 Team 2">
-                                            </select>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="sf2-s2" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Semifinal 2 Team 2 score">−</button>
-                                                <input id="sf2-s2" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-knicks-orange rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Semifinal 2 Team 2 score">
-                                                <button data-adjust-score="sf2-s2" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Semifinal 2 Team 2 score">+</button>
-                                                <button data-set-winner="sf2:t2" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 2 as Semifinal 2 winner">👑</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<div>
+<h3 class="text-gray-400 text-xs mb-2">3rd Place</h3>
+<div id="third" class="p-2 bg-slate-900 rounded">
+<span id="third-t1">TBD</span>
+<input id="third-s1" type="number" value="0">
+<span id="third-t2">TBD</span>
+<input id="third-s2" type="number" value="0">
+</div>
+</div>
 
-                                <!-- Column 2: Third Place Match -->
-                                <div class="flex flex-col justify-center relative z-10">
-                                    <h5 class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Third Place Match</h5>
-                                    
-                                    <div id="third-card" class="bg-slate-950/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md transition-all" role="group" aria-labelledby="third-title">
-                                        <div id="third-title" class="text-[9px] font-mono text-sky-400 uppercase tracking-wider">Bronze Medal Game</div>
-                                        
-                                        <div data-match-row="t1" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <span id="third-t1" class="text-xs font-semibold text-gray-300 font-mono truncate w-1/2">SF1 Loser</span>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="third-s1" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Third place Team 1 score">−</button>
-                                                <input id="third-s1" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-sky-400 rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Third place Team 1 score">
-                                                <button data-adjust-score="third-s1" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Third place Team 1 score">+</button>
-                                                <button data-set-winner="third:t1" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 1 as Third place winner">👑</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div data-match-row="t2" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <span id="third-t2" class="text-xs font-semibold text-gray-300 font-mono truncate w-1/2">SF2 Loser</span>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="third-s2" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Third place Team 2 score">−</button>
-                                                <input id="third-s2" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-sky-400 rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Third place Team 2 score">
-                                                <button data-adjust-score="third-s2" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Third place Team 2 score">+</button>
-                                                <button data-set-winner="third:t2" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 2 as Third place winner">👑</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+</div>
 
-                                <!-- Column 3: Grand Finals -->
-                                <div class="flex flex-col justify-center relative z-10">
-                                    <h5 class="text-xs font-mono tracking-wider font-bold text-yellow-400 border-b border-yellow-400/20 pb-1 mb-2">Championship</h5>
-                                    
-                                    <div id="finals-card" class="bg-gradient-to-b from-slate-900 to-black rounded-xl p-4 border-2 border-yellow-500/40 space-y-3 shadow-xl transition-all" role="group" aria-labelledby="finals-title">
-                                        <div id="finals-title" class="text-[9px] font-mono text-yellow-400 uppercase tracking-wider flex items-center gap-1">🏆 Gold Medal Game</div>
-                                        
-                                        <div data-match-row="t1" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <span id="finals-t1" class="text-xs font-bold text-white font-mono truncate w-1/2">SF1 Winner</span>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="finals-s1" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Finals Team 1 score">−</button>
-                                                <input id="finals-s1" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-yellow-400 rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Finals Team 1 score">
-                                                <button data-adjust-score="finals-s1" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Finals Team 1 score">+</button>
-                                                <button data-set-winner="finals:t1" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 1 as Finals winner">👑</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div data-match-row="t2" class="flex items-center justify-between gap-2 p-1 rounded transition-all border border-white/10">
-                                            <span id="finals-t2" class="text-xs font-bold text-white font-mono truncate w-1/2">SF2 Winner</span>
-                                            <div class="flex items-center gap-1">
-                                                <button data-adjust-score="finals-s2" data-delta="-1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Decrease Finals Team 2 score">−</button>
-                                                <input id="finals-s2" data-match-score type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-xs text-yellow-400 rounded border border-white/10 w-12 focus:outline-none focus:border-knicks-orange" aria-label="Finals Team 2 score">
-                                                <button data-adjust-score="finals-s2" data-delta="1" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded flex items-center justify-center transition-colors" aria-label="Increase Finals Team 2 score">+</button>
-                                                <button data-set-winner="finals:t2" title="Set as winner" class="w-7 h-7 rounded bg-slate-950 hover:bg-amber-500/20 flex items-center justify-center transition-colors" aria-label="Set Team 2 as Finals winner">👑</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<button id="save" class="bg-knicks-blue mt-4 px-4 py-2 rounded">Save</button>
 
-                            </div>
+</section>
 
-                            <!-- Lock and Submit Score Area -->
-                            <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div class="text-xs text-gray-400 max-w-md">
-                                    <strong class="text-gray-200">Commissioner Lock:</strong> Save matches to push points directly to the overall standings board. You can revisit/edit this event anytime.
-                                </div>
-                                <div class="flex items-center gap-2 w-full md:w-auto">
-                                    <button class="w-full md:w-auto bg-knicks-blue hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-xs tracking-wider transition-colors" aria-label="Save scores and lock event">
-                                        💾 Save Scores & Lock Event
-                                    </button>
-                                </div>
-                            </div>
+</div>
 
-                        </div>
-                    </div>
+<aside class="bg-black border-4 border-knicks-blue p-4 rounded-xl sticky top-4 h-fit">
+<h3 class="font-arena text-xl mb-4">Standings</h3>
+<div id="leaderboard"></div>
+</aside>
 
-                </div>
-            </section>
+</main>
 
-        </div>
+<dialog id="modal" class="p-6 bg-slate-900 rounded">
+<p id="modal-content"></p>
+<button onclick="document.getElementById('modal').close()">Close</button>
+</dialog>
 
-        <!-- Sticky Right Side Standings Panel -->
-        <aside class="space-y-6">
-            <section class="bg-black border-4 border-knicks-blue rounded-2xl p-5 shadow-2xl relative overflow-hidden lg:sticky lg:top-6" aria-labelledby="leaderboard-heading">
-                <div class="absolute -right-16 -top-16 w-32 h-32 bg-knicks-orange/10 rounded-full blur-3xl" aria-hidden="true"></div>
-                
-                <div class="text-center border-b border-white/10 pb-4 mb-4">
-                    <span class="text-[10px] font-mono tracking-widest text-knicks-orange uppercase font-bold">MSG Live Leaderboard</span>
-                    <h3 id="leaderboard-heading" class="font-arena text-2xl tracking-wide text-white mt-1">ARENA STANDINGS</h3>
-                    
-                    <div class="mt-2 bg-white/5 rounded-full h-2 overflow-hidden max-w-xs mx-auto flex">
-                        <div id="standings-progress-bar" class="bg-knicks-orange h-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <span id="standings-progress-text" class="text-[10px] text-gray-400 font-mono block mt-1">0 / 10 Events Locked</span>
-                </div>
+<footer class="text-center text-xs text-gray-500 mt-10 py-4 border-t">
+ZZ Bachelor Cup 2026
+</footer>
 
-                <!-- Dynamic Standings List -->
-                <div id="leaderboard-list" class="space-y-3" role="list" aria-label="Team standings">
-                    <!-- Populated dynamically via JS -->
-                </div>
+<script type="module">
 
-                <!-- Scoreboard Legend/Points rules -->
-                <div class="mt-6 pt-4 border-t border-white/10 text-xs text-gray-400 space-y-2">
-                    <div class="flex justify-between font-mono text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                        <span>Event Points Scale</span>
-                        <span>Multipliers</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1 text-[10px] font-mono">
-                        <div>🥇 1st: <strong class="text-yellow-400">4 pts</strong></div>
-                        <div>🏐 Volleyball: <strong class="text-white">1.5x</strong></div>
-                        <div>🥈 2nd: <strong class="text-gray-300">3 pts</strong></div>
-                        <div>🎯 Others: <strong class="text-white">1.0x</strong></div>
-                        <div>🥉 3rd: <strong class="text-amber-600">2 pts</strong></div>
-                        <div></div>
-                        <div>🎖️ 4th: <strong class="text-gray-500">1 pt</strong></div>
-                    </div>
-                </div>
-            </section>
-        </aside>
+const teams=[
+"OGs","Harts","Brunsons","KATs"
+]
 
-    </main>
+const state={scores:{},standings:{}}
 
-    <!-- Player Details Visualizer Modal -->
-    <dialog id="player-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
-            <button id="player-modal-close" class="absolute right-4 top-4 text-gray-400 hover:text-white font-bold text-xl cursor-pointer" aria-label="Close player details">✕</button>
-            
-            <div class="space-y-6">
-                <!-- Header with name and team logo color -->
-                <div class="flex items-center gap-3">
-                    <div id="modal-player-color" class="w-4 h-12 rounded-full bg-orange-500" aria-hidden="true"></div>
-                    <div>
-                        <h3 id="modal-player-name" class="font-arena text-2xl text-white tracking-wide">Player Name</h3>
-                        <p id="modal-player-team" class="text-xs font-mono text-gray-400"></p>
-                    </div>
-                </div>
+const grid=document.getElementById("rosters-grid")
+teams.forEach(t=>{
+let div=document.createElement("div")
+div.className="p-4 bg-slate-900 rounded"
+div.textContent=t
+grid.appendChild(div)
+})
 
-                <!-- Hydration Style Card -->
-                <div class="bg-black/40 p-4 rounded-xl border border-white/5 space-y-1">
-                    <span class="text-[10px] font-mono text-knicks-orange uppercase tracking-wider block">Hydration Style</span>
-                    <p id="modal-player-hydration" class="text-xs text-gray-300 italic font-medium"></p>
-                </div>
+function populateSelect(id){
+let sel=document.getElementById(id)
+teams.forEach(t=>{
+let o=document.createElement("option")
+o.value=t
+o.textContent=t
+sel.appendChild(o)
+})
+}
 
-                <!-- Skill Ratings breakdown bars -->
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-arena text-xs text-white tracking-wider">Sports & Games Competencies</h4>
-                        <span class="text-[10px] font-mono text-gray-400">Values on scale of 1-5</span>
-                    </div>
-                    <div id="modal-player-skills" class="space-y-2" role="list">
-                        <!-- Bars filled dynamically -->
-                    </div>
-                </div>
+["sf1-t1","sf1-t2"].forEach(populateSelect)
 
-                <!-- Food & Liquor Preferences -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
-                        <span class="text-[10px] font-mono text-sky-400 uppercase tracking-wider block">Alcohol Choice</span>
-                        <div id="modal-player-alcohol" class="text-xs text-gray-400 space-y-0.5"></div>
-                    </div>
-                    <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
-                        <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block">Non-Alcohol Mix</span>
-                        <div id="modal-player-na" class="text-xs text-gray-400 space-y-0.5"></div>
-                    </div>
-                </div>
+function calculate(){
+let scores={}
+teams.forEach(t=>scores[t]=0)
 
-                <!-- Dietary restrictions alert banner -->
-                <div id="modal-player-dietary-container" class="hidden bg-red-950/20 border border-red-500/10 p-3 rounded-lg">
-                    <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider block font-bold">⚠️ Commissioner Accommodations Required</span>
-                    <p id="modal-player-dietary" class="text-xs text-gray-300 font-mono mt-1"></p>
-                </div>
-            </div>
-        </div>
-    </dialog>
+let s1=parseInt(sf1-s1.value)||0
+let s2=parseInt(sf1-s2.value)||0
 
-    <!-- Footer -->
-    <footer class="mt-12 text-center text-[11px] font-mono text-gray-600 border-t border-white/5 pt-6 max-w-7xl mx-auto w-full" role="contentinfo">
-        ZZ Bachelor Cup 2026. Built with pristine mathematical parity algorithms. All data synced in real-time with Google Firebase.
-    </footer>
+if(s1>s2){scores[sf1-t1.value]+=4}
+else{scores[sf1-t2.value]+=4}
 
-    <!-- Application Scripts (Modular Architecture) -->
-    <script type="module" src="js/app.js"></script>
+render(scores)
+}
+
+function render(scores){
+let el=document.getElementById("leaderboard")
+el.innerHTML=""
+Object.entries(scores).forEach(([t,s])=>{
+let d=document.createElement("div")
+d.textContent=t+": "+s
+el.appendChild(d)
+})
+}
+
+document.getElementById("save").onclick=calculate
+
+// tabs
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+btn.onclick=()=>{
+
+document.querySelectorAll(".tab-pane").forEach(p=>p.classList.add("hidden"))
+document.getElementById(btn.dataset.tab).classList.remove("hidden")
+
+}
+})
+
+</script>
+
 </body>
 </html>
