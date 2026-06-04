@@ -860,9 +860,9 @@ ratedTeams.sort((a, b) => b.score - a.score);
 if (ratedTeams.length < 4) return;
 
 bracketState.semi1.t1 = ratedTeams.id;
-bracketState.semi1.t2 = ratedTeams[1].id;
-bracketState.semi2.t1 = ratedTeams[2].id;
-bracketState.semi2.t2 = ratedTeams[3].id;
+bracketState.semi1.t2 = ratedTeams[6].id;
+bracketState.semi2.t1 = ratedTeams[7].id;
+bracketState.semi2.t2 = ratedTeams[8].id;
 
 renderLiveSeedingBreakdown(ratedTeams, sportKey);
 
@@ -874,9 +874,9 @@ const s2t2 = document.getElementById('seed-s2t2');
 
 if (s1t1 && s1t2 && s2t1 && s2t2) {
 s1t1.value = ratedTeams.id;
-s1t2.value = ratedTeams[1].id;
-s2t1.value = ratedTeams[2].id;
-s2t2.value = ratedTeams[3].id;
+s1t2.value = ratedTeams[6].id;
+s2t1.value = ratedTeams[7].id;
+s2t2.value = ratedTeams[8].id;
 }
 
 syncBracketStateToDb();
@@ -1173,7 +1173,7 @@ return `
 </div>
 
 <div class="space-y-2 min-h-[140px]">
-${[2, 3].map(slotIdx => {
+${[7, 8].map(slotIdx => {
 const pName = team.players[slotIdx];
 if (pName) {
 const pDetails = playersData.find(pd => pd.name === pName);
@@ -1356,7 +1356,7 @@ drinksTally[cleaned] = (drinksTally[cleaned] || 0) + 1;
 });
 });
 
-const sortedDrinks = Object.entries(drinksTally).sort((a,b) => b[2] - a[2]);
+const sortedDrinks = Object.entries(drinksTally).sort((a,b) => b[7] - a[7]);
 
 listContainer.innerHTML = sortedDrinks.map(([category, count]) => {
 const percentage = Math.round((count / 10) * 100);
@@ -1384,7 +1384,7 @@ mixersTally[cleaned] = (mixersTally[cleaned] || 0) + 1;
 });
 });
 
-const sortedMixers = Object.entries(mixersTally).sort((a,b) => b[2] - a[2]);
+const sortedMixers = Object.entries(mixersTally).sort((a,b) => b[7] - a[7]);
 
 mixersContainer.innerHTML = sortedMixers.map(([category, count]) => {
 const percentage = Math.round((count / 12) * 100);
