@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bachelor Cup 2026 - MSG Arena Tracker</title>
+    <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
+    <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0B132B;
+            background-color: #060b19;
         }
         .font-arena {
             font-family: 'Bungee', cursive;
@@ -31,208 +32,1595 @@
         .border-knicks-orange {
             border-color: #F58426;
         }
+        .border-knicks-blue {
+            border-color: #006BB6;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B132B;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F58426;
+        }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen pb-12">
+<body class="text-gray-100 min-h-screen pb-12 flex flex-col justify-between">
 
-    <header class="relative bg-black text-center py-12 px-4 border-b-8 border-knicks-orange shadow-2xl overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#006BB6_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div class="relative z-10">
-            <span class="inline-block bg-knicks-blue text-white font-bold px-4 py-1 rounded-full text-xs tracking-widest uppercase mb-3 border border-white/20 shadow-md animate-pulse">Live from MSG Arena</span>
-            <h1 class="font-arena text-5xl md:text-7xl tracking-tight text-white drop-shadow-[0_4px_0_#006BB6]">
-                BACHELOR <span class="knicks-orange">CUP</span> 2026
+    <!-- Header -->
+    <header class="relative bg-black text-center py-10 px-4 border-b-8 border-knicks-orange shadow-2xl overflow-hidden">
+        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#006BB6_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+        <div class="relative z-10 max-w-7xl mx-auto flex flex-col items-center justify-center">
+            
+            <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+                <span class="inline-flex items-center gap-2 bg-knicks-blue/90 text-white font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase border border-white/20 shadow-lg animate-pulse">
+                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full inline-block animate-ping"></span> Live MSG Arena Feed
+                </span>
+                <!-- Connection Status Badge -->
+                <span id="db-status-badge" class="inline-flex items-center gap-1.5 bg-slate-900 text-slate-400 font-mono font-bold px-3 py-1.5 rounded-full text-[10px] tracking-wider uppercase border border-white/5">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span> Connecting to Live DB...
+                </span>
+            </div>
+
+            <h1 class="font-arena text-4xl sm:text-6xl md:text-7xl tracking-tight text-white drop-shadow-[0_4px_0_#006BB6] uppercase leading-tight">
+                ZZ BACHELOR <span class="knicks-orange">CUP</span> 2026
             </h1>
-            <p class="text-gray-400 mt-3 max-w-xl mx-auto font-medium text-sm md:text-base tracking-wide">
-                Welcome to The Garden. 4 Teams. 12 Competitors. Near-Flawless Mathematical Parity. May the best squad hold the hardware.
+            <p class="text-gray-400 mt-3 max-w-2xl mx-auto font-medium text-xs sm:text-sm md:text-base tracking-wide">
+                Welcome to The Garden. 4 Teams. 12 Competitors. 10 Championship Events. 
+                Complete live rating profiles, real-time standings calculators, and commissioner toolkits.
             </p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Live Workspace -->
+    <main class="max-w-7xl w-full mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
         
-        <div class="lg:col-span-2 space-y-8">
+        <!-- Interactive Left Workstation (Tabs) -->
+        <div class="lg:col-span-2 space-y-6">
             
-            <section>
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="font-arena text-2xl tracking-wide text-white flex items-center gap-2">
-                        <span class="inline-block w-3 h-6 bg-knicks-orange rounded-sm"></span> Official Team Sheets
-                    </h2>
-                    <span class="text-xs bg-white/5 border border-white/10 text-gray-400 px-3 py-1 rounded-md font-mono">Max Variance: 3 pts</span>
-                </div>
-                
-                <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                </div>
-            </section>
+            <!-- Custom Tab Navigation -->
+            <div class="bg-slate-900/80 p-1.5 rounded-xl border border-white/5 flex flex-wrap gap-1 shadow-lg backdrop-blur-md">
+                <button onclick="switchTab('teams')" id="tab-btn-teams" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 bg-knicks-blue text-white shadow-md">
+                    🏆 TEAMS & ROSTERS
+                </button>
+                <button onclick="switchTab('scoring')" id="tab-btn-scoring" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                    ⚔️ EVENTS & BRACKETS
+                </button>
+                <button onclick="switchTab('commish')" id="tab-btn-commish" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                    📊 COMMISSIONER HUB
+                </button>
+                <button onclick="switchTab('sync')" id="tab-btn-sync" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                    🔄 CSV IMPORT
+                </button>
+            </div>
 
-            <section class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl">
-                <h3 class="font-arena text-lg text-white mb-4 flex items-center gap-2">
-                    📊 Commissioner Analytics & Injury Report
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
-                    <div class="bg-black/30 p-4 rounded-xl border border-white/5 space-y-2">
-                        <p class="font-bold text-white uppercase tracking-wider text-xs knicks-orange">Dietary Restraints</p>
-                        <ul class="list-disc list-inside space-y-1 text-gray-400 font-mono text-xs">
-                            <li><strong class="text-gray-200">Salah, Alex, Sam F:</strong> No Pork</li>
-                            <li><strong class="text-gray-200">David:</strong> Keeps Jewish Dietary Standards</li>
-                            <li><strong class="text-gray-200">Stephan:</strong> Lactose Intolerant / No Cilantro</li>
-                        </ul>
-                    </div>
-                    <div class="bg-black/30 p-4 rounded-xl border border-white/5 space-y-2">
-                        <p class="font-bold text-white uppercase tracking-wider text-xs text-blue-400">Hydration & Special Logistics</p>
-                        <ul class="list-disc list-inside space-y-1 text-gray-400 font-mono text-xs">
-                            <li><strong class="text-gray-200">Sam F & Salah:</strong> Zero Alcohol / Sober Snipers</li>
-                            <li><strong class="text-gray-200">Sam F Request:</strong> 0-Proof/NA Beer at the store</li>
-                            <li><strong class="text-gray-200">Salah Tax:</strong> Explicit request for Oreos</li>
-                        </ul>
+            <!-- Toast Alert Notification Area -->
+            <div id="toast-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl flex items-center justify-between transition-all duration-300">
+                <span id="toast-message" class="text-xs font-mono"></span>
+                <button onclick="hideToast()" class="text-emerald-300 hover:text-white font-bold ml-2">×</button>
+            </div>
+
+            <!-- TAB 1: TEAMS & PLAYERS -->
+            <div id="tab-content-teams" class="tab-pane space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 class="font-arena text-2xl tracking-wide text-white flex items-center gap-2">
+                        <span class="inline-block w-3 h-6 bg-knicks-orange rounded-sm"></span> Competitor sheets
+                    </h2>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-gray-400">Filter Roster:</span>
+                        <select id="team-filter" onchange="filterTeams()" class="bg-slate-900 border border-white/10 rounded-lg px-3 py-1 text-gray-200 font-mono focus:border-knicks-orange focus:outline-none">
+                            <option value="all">All Squads</option>
+                            <option value="The OGs">The OGs (Orange)</option>
+                            <option value="The Harts">The Harts (Blue)</option>
+                            <option value="The Brunsons">The Brunsons (Green)</option>
+                            <option value="The KATs">The KATs (Purple)</option>
+                        </select>
                     </div>
                 </div>
-            </section>
+
+                <!-- Teams Display Grid -->
+                <div id="rosters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="text-center py-12 text-gray-500 font-mono text-sm col-span-2">
+                        Loading competitor rosters...
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SCORING & BRACKETS FOR EACH EVENT -->
+            <div id="tab-content-scoring" class="tab-pane hidden space-y-6">
+                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
+                    
+                    <!-- Event Selector Section -->
+                    <div class="space-y-3">
+                        <h2 class="font-arena text-xl tracking-wide text-white flex items-center gap-2">
+                            🏈 SELECT CHAMPIONSHIP EVENT
+                        </h2>
+                        <p class="text-xs text-gray-400 font-mono">Select one of the 10 games to enter live scoresheets, play match-ups, or simulate outcomes.</p>
+                        
+                        <!-- Mini Icons Selector Grid -->
+                        <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" id="event-selector-grid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Highlighted Event Card and Bracket Workspace -->
+                    <div id="active-event-card" class="bg-black/40 border border-white/5 rounded-xl p-5 space-y-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/5 pb-4 gap-4">
+                            <div class="flex items-center gap-3">
+                                <span id="active-event-icon" class="text-4xl">🎱</span>
+                                <div>
+                                    <h3 id="active-event-name" class="font-arena text-2xl text-white tracking-wide">Pool (8-Ball)</h3>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider bg-white/5 text-gray-400 px-2 py-0.5 rounded" id="active-event-meta">
+                                        Standard Bracket • Weight 1.0x
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button onclick="quickSimulate()" class="bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5">
+                                    🎲 Simulation Bot
+                                </button>
+                                <button onclick="resetActiveEvent()" class="bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all">
+                                    🗑️ Reset Event
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4-Team Championship Bracket Visuals -->
+                        <div class="space-y-6">
+                            <h4 class="font-arena text-sm text-gray-400 tracking-wider">Tournament Tree</h4>
+                            
+                            <!-- Visual Columns Wrapper -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                                
+                                <!-- Column 1: Semifinals -->
+                                <div class="space-y-6 flex flex-col justify-around">
+                                    <div class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Semifinals</div>
+                                    
+                                    <!-- SF Match 1 -->
+                                    <div class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
+                                        <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-[1px] bg-white/20 hidden md:block"></div>
+                                        <div class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #1</div>
+                                        
+                                        <!-- Team 1 Row -->
+                                        <div class="flex items-center justify-between gap-2">
+                                            <select id="sf1-t1" onchange="updateCustomSeeding('sf1', 't1')" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-2/3 focus:outline-none"></select>
+                                            <input id="sf1-s1" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-knicks-orange rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                        <!-- Team 2 Row -->
+                                        <div class="flex items-center justify-between gap-2">
+                                            <select id="sf1-t2" onchange="updateCustomSeeding('sf1', 't2')" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-2/3 focus:outline-none"></select>
+                                            <input id="sf1-s2" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-knicks-orange rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                    </div>
+
+                                    <!-- SF Match 2 -->
+                                    <div class="bg-slate-900/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
+                                        <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-[1px] bg-white/20 hidden md:block"></div>
+                                        <div class="text-[9px] font-mono text-knicks-orange uppercase tracking-wider">Semifinal #2</div>
+                                        
+                                        <!-- Team 3 Row -->
+                                        <div class="flex items-center justify-between gap-2">
+                                            <select id="sf2-t1" onchange="updateCustomSeeding('sf2', 't1')" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-2/3 focus:outline-none"></select>
+                                            <input id="sf2-s1" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-knicks-orange rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                        <!-- Team 4 Row -->
+                                        <div class="flex items-center justify-between gap-2">
+                                            <select id="sf2-t2" onchange="updateCustomSeeding('sf2', 't2')" class="bg-black/60 text-xs rounded border border-white/5 text-white p-1 font-mono w-2/3 focus:outline-none"></select>
+                                            <input id="sf2-s2" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-knicks-orange rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Column 2: Third Place Match -->
+                                <div class="flex flex-col justify-center">
+                                    <div class="text-xs font-mono tracking-wider font-bold text-gray-400 border-b border-white/10 pb-1 mb-2">Third Place Match</div>
+                                    
+                                    <div class="bg-slate-950/80 rounded-xl p-3 border border-white/10 space-y-3 relative shadow-md">
+                                        <div class="text-[9px] font-mono text-sky-400 uppercase tracking-wider">Bronze Medal Game</div>
+                                        
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span id="third-t1" class="text-xs font-semibold text-gray-300 font-mono truncate w-2/3">SF1 Loser</span>
+                                            <input id="third-s1" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-sky-400 rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span id="third-t2" class="text-xs font-semibold text-gray-300 font-mono truncate w-2/3">SF2 Loser</span>
+                                            <input id="third-s2" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-sky-400 rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Column 3: Grand Finals -->
+                                <div class="flex flex-col justify-center">
+                                    <div class="text-xs font-mono tracking-wider font-bold text-yellow-400 border-b border-yellow-400/20 pb-1 mb-2">Championship</div>
+                                    
+                                    <div class="bg-gradient-to-b from-slate-900 to-black rounded-xl p-4 border-2 border-yellow-500/40 space-y-3 shadow-xl">
+                                        <div class="text-[9px] font-mono text-yellow-400 uppercase tracking-wider flex items-center gap-1">🏆 Gold Medal Game</div>
+                                        
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span id="finals-t1" class="text-xs font-bold text-white font-mono truncate w-2/3">SF1 Winner</span>
+                                            <input id="finals-s1" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-yellow-400 rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span id="finals-t2" class="text-xs font-bold text-white font-mono truncate w-2/3">SF2 Winner</span>
+                                            <input id="finals-s2" onchange="updateLiveMatchScores()" type="number" min="0" value="0" class="bg-black/80 font-bold text-center text-sm text-yellow-400 rounded border border-white/10 w-12 py-0.5 font-mono" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Lock and Submit Score Area -->
+                            <div class="bg-slate-900/60 p-4 rounded-xl border border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="text-xs text-gray-400 max-w-md">
+                                    <strong class="text-gray-200">Commissioner Lock:</strong> Save matches to push points directly to the overall standings board. You can revisit/edit this event anytime before the final cup ceremony.
+                                </div>
+                                <div class="flex items-center gap-2 w-full md:w-auto">
+                                    <button onclick="calculateEventRanks()" class="w-full md:w-auto bg-knicks-blue hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg text-xs tracking-wider transition-all shadow-md cursor-pointer">
+                                        💾 Save Scores & Lock Event
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 3: COMMISSIONER HUB -->
+            <div id="tab-content-commish" class="tab-pane hidden space-y-6">
+                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                        <h2 class="font-arena text-2xl tracking-wide text-white flex items-center gap-2">
+                            👑 Commissioner Analytics Desk
+                        </h2>
+                        <span class="text-xs bg-knicks-orange/10 border border-knicks-orange/20 text-knicks-orange px-3 py-1 rounded-md font-mono font-bold">Party Size: 12 Players</span>
+                    </div>
+
+                    <!-- Analytics Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                            <span class="text-gray-400 text-xs font-mono block">Zero-Proof / Sober Snipers</span>
+                            <span id="commish-sober-count" class="text-3xl font-arena text-sky-400 mt-1 block">0</span>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                            <span class="text-gray-400 text-xs font-mono block">No-Pork Restraints</span>
+                            <span id="commish-pork-count" class="text-3xl font-arena text-orange-400 mt-1 block">0</span>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                            <span class="text-gray-400 text-xs font-mono block">Special Diet / Celiac / Lactose</span>
+                            <span id="commish-special-count" class="text-3xl font-arena text-emerald-400 mt-1 block">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Diet, Hydration, Allergies Detailed Board -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-black/40 p-5 rounded-xl border border-white/5 space-y-3">
+                            <h3 class="font-arena text-sm text-knicks-orange tracking-wider">Allergies & Medical Exclusions</h3>
+                            <div class="divide-y divide-white/5 text-xs text-gray-300" id="dietary-list-commish">
+                                <!-- Populated dynamically from player DB -->
+                            </div>
+                        </div>
+
+                        <div class="bg-black/40 p-5 rounded-xl border border-white/5 space-y-3">
+                            <h3 class="font-arena text-sm text-sky-400 tracking-wider">Hydration Profiles & Archetypes</h3>
+                            <div class="divide-y divide-white/5 text-xs text-gray-300" id="hydration-list-commish">
+                                <!-- Populated dynamically from player DB -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Automatically Aggregated Grocery Shopping List -->
+                    <div class="bg-black/60 p-5 rounded-xl border border-white/10 space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                            <h3 class="font-arena text-sm text-yellow-400 tracking-wider flex items-center gap-1.5">
+                                🛒 AUTOMATED GROCERY & LIQUOR CALCULATOR
+                            </h3>
+                            <span class="text-[10px] font-mono text-gray-400">Derived from 12 surveys</span>
+                        </div>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Based on player alcohol and beverage preference data, the commissioner should target these items for the kitchen and bar stocking.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Alcohol Section -->
+                            <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5 space-y-2">
+                                <span class="text-xs font-bold text-gray-300 block uppercase border-b border-white/5 pb-1">Alcohol Purchases</span>
+                                <ul class="space-y-1 text-xs font-mono text-gray-400" id="shopping-alcohol">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                            <!-- Mixers & Non-Alcohol Section -->
+                            <div class="bg-slate-900/60 p-3 rounded-lg border border-white/5 space-y-2">
+                                <span class="text-xs font-bold text-gray-300 block uppercase border-b border-white/5 pb-1">Mixers, NA & snacks</span>
+                                <ul class="space-y-1 text-xs font-mono text-gray-400" id="shopping-na">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB 4: CSV IMPORT & SYNC -->
+            <div id="tab-content-sync" class="tab-pane hidden space-y-6">
+                <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
+                    <div class="space-y-2">
+                        <h2 class="font-arena text-2xl tracking-wide text-white">
+                            🔄 Google Form Survey Synchronization
+                        </h2>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Keep player skill ratings, alcohol choices, and dietary requests perfectly synced! Export your official Google Sheet/Form responses as a <strong class="text-gray-200">.csv</strong> file and upload it below. The system automatically reconciles the entries against the team rosters.
+                        </p>
+                    </div>
+
+                    <!-- Drag & Drop Zone -->
+                    <div id="drop-zone" class="border-2 border-dashed border-knicks-blue bg-black/40 hover:bg-black/60 transition-all rounded-2xl p-8 text-center cursor-pointer flex flex-col items-center justify-center gap-3">
+                        <span class="text-4xl">📂</span>
+                        <div>
+                            <span class="text-sm font-bold text-gray-200 block">Drag & Drop survey .csv file here</span>
+                            <span class="text-xs text-gray-400 block mt-1">or click to browse your local computer</span>
+                        </div>
+                        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleFileSelect(event)" />
+                    </div>
+
+                    <!-- Fallback Paste Text Box -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-mono text-gray-400 block">Or, paste raw CSV contents here:</label>
+                        <textarea id="raw-csv-paste" placeholder="Timestamp,What is your name?,..." class="w-full h-32 bg-black/80 rounded-xl border border-white/10 p-3 text-xs font-mono text-gray-300 focus:outline-none focus:border-knicks-orange"></textarea>
+                        <button onclick="parsePasteCSV()" class="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-lg font-mono font-bold transition-all border border-white/10 cursor-pointer animate-pulse">
+                            Process Pasted Data
+                        </button>
+                    </div>
+
+                    <!-- Import logs and status -->
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/5 space-y-2">
+                        <span class="text-xs font-mono text-gray-400 block uppercase">Parse Synchronization Log</span>
+                        <div id="parse-logs" class="text-[10px] font-mono text-gray-500 h-24 overflow-y-auto space-y-1 bg-black/40 p-2 rounded border border-white/5">
+                            System Idle. Ready to parse responses.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
+        <!-- Sticky Right Side Standings Panel -->
         <div class="space-y-6">
-            <section class="bg-black border-4 border-knicks-blue rounded-2xl p-6 shadow-2xl relative overflow-hidden sticky top-6">
+            <section class="bg-black border-4 border-knicks-blue rounded-2xl p-5 shadow-2xl relative overflow-hidden lg:sticky lg:top-6">
                 <div class="absolute -right-16 -top-16 w-32 h-32 bg-knicks-orange/10 rounded-full blur-3xl"></div>
                 
                 <div class="text-center border-b border-white/10 pb-4 mb-4">
                     <span class="text-[10px] font-mono tracking-widest text-knicks-orange uppercase font-bold">MSG Live Leaderboard</span>
-                    <h3 class="font-arena text-xl tracking-wide text-white mt-1">ARENA STANDINGS</h3>
+                    <h3 class="font-arena text-2xl tracking-wide text-white mt-1">ARENA STANDINGS</h3>
+                    
+                    <div class="mt-2 bg-white/5 rounded-full h-2 overflow-hidden max-w-xs mx-auto flex">
+                        <div id="standings-progress-bar" class="bg-knicks-orange h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <span id="standings-progress-text" class="text-[10px] text-gray-400 font-mono block mt-1">0 / 10 Events Locked</span>
                 </div>
 
+                <!-- Dynamic Standings List -->
                 <div id="leaderboard-list" class="space-y-3">
+                    <!-- Populated dynamically via JS -->
                 </div>
 
-                <div class="mt-6 pt-4 border-t border-white/10 text-center">
-                    <p class="text-[10px] font-mono text-gray-500">
-                        Scores calculated dynamically from match data sheets.
-                    </p>
+                <!-- Scoreboard Legend/Points rules -->
+                <div class="mt-6 pt-4 border-t border-white/10 text-xs text-gray-400 space-y-2">
+                    <div class="flex justify-between font-mono text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                        <span>Event Points Scale</span>
+                        <span>Multipliers</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1 text-[10px] font-mono">
+                        <div>🥇 1st: <strong class="text-yellow-400">4 pts</strong></div>
+                        <div>🏐 Volleyball: <strong class="text-white">1.5x</strong></div>
+                        <div>🥈 2nd: <strong class="text-gray-300">3 pts</strong></div>
+                        <div>🎯 Others: <strong class="text-white">1.0x</strong></div>
+                        <div>🥉 3rd: <strong class="text-amber-600">2 pts</strong></div>
+                        <div></div>
+                        <div>🎖️ 4th: <strong class="text-gray-500">1 pt</strong></div>
+                    </div>
                 </div>
             </section>
         </div>
 
     </main>
 
-    <script>
-        const teamData = [
+    <!-- Player Details Visualizer Modal Overlay -->
+    <div id="player-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+            <button onclick="closePlayerModal()" class="absolute right-4 top-4 text-gray-400 hover:text-white font-bold text-xl cursor-pointer">✕</button>
+            
+            <div class="space-y-6">
+                <!-- Header with name and team logo color -->
+                <div class="flex items-center gap-3">
+                    <div id="modal-player-color" class="w-4 h-12 rounded-full bg-orange-500"></div>
+                    <div>
+                        <h3 id="modal-player-name" class="font-arena text-2xl text-white tracking-wide">Player Name</h3>
+                        <p id="modal-player-team" class="text-xs font-mono text-gray-400"></p>
+                    </div>
+                </div>
+
+                <!-- Hydration Style Card -->
+                <div class="bg-black/40 p-4 rounded-xl border border-white/5 space-y-1">
+                    <span class="text-[10px] font-mono text-knicks-orange uppercase tracking-wider block">Hydration Style</span>
+                    <p id="modal-player-hydration" class="text-xs text-gray-300 italic font-medium"></p>
+                </div>
+
+                <!-- Skill Ratings breakdown bars -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-arena text-xs text-white tracking-wider">Sports & Games Competencies</h4>
+                        <span class="text-[10px] font-mono text-gray-400">Values on scale of 1-5</span>
+                    </div>
+                    <div id="modal-player-skills" class="space-y-2">
+                        <!-- Bars filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- Food & Liquor Preferences -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
+                        <span class="text-[10px] font-mono text-sky-400 uppercase tracking-wider block">Alcohol Choice</span>
+                        <div id="modal-player-alcohol" class="text-xs text-gray-400 space-y-0.5"></div>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
+                        <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block">Non-Alcohol Mix</span>
+                        <div id="modal-player-na" class="text-xs text-gray-400 space-y-0.5"></div>
+                    </div>
+                </div>
+
+                <!-- Dietary restrictions alert banner -->
+                <div id="modal-player-dietary-container" class="hidden bg-red-950/20 border border-red-500/10 p-3 rounded-lg">
+                    <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider block font-bold">⚠️ Commissioner Accommodations Required</span>
+                    <p id="modal-player-dietary" class="text-xs text-gray-300 font-mono mt-1"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-[11px] font-mono text-gray-600 border-t border-white/5 pt-6 max-w-7xl mx-auto w-full">
+        ZZ Bachelor Cup 2026. Built with pristine mathematical parity algorithms. All data synced in real-time with Google Firebase.
+    </footer>
+
+    <!-- Scripting Core System -->
+    <script type="module">
+        // Import Firebase JS SDK products using ES modules via the official static CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Your provided production Firebase web app configuration details
+        const firebaseConfig = {
+            apiKey: "AIzaSyAd97W7fjRXHqtljXPdkzs4xRMiSePRvs4",
+            authDomain: "zzbachelorcup.firebaseapp.com",
+            projectId: "zzbachelorcup",
+            storageBucket: "zzbachelorcup.firebasestorage.app",
+            messagingSenderId: "1093392238882",
+            appId: "1:1093392238882:web:8a1403a3edd58ffc39fd7b",
+            measurementId: "G-D3CFZQM9B8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let analytics;
+        try {
+            analytics = getAnalytics(app);
+        } catch (err) {
+            console.warn("Analytics blocked or unsupported in current viewport environment: ", err);
+        }
+
+        // 10 MSG Arena events mapping directly to survey structures
+        const events = [
+            { id: 'pool', name: 'Pool (8-Ball)', icon: '🎱', weight: 1, key: 'Pool (8-Ball) 🎱' },
+            { id: 'air_hockey', name: 'Air Hockey', icon: '🥏', weight: 1, key: 'Air Hockey 🥏' },
+            { id: 'foosball', name: 'Foosball', icon: '⚽', weight: 1, key: 'Foosball ⚽' },
+            { id: 'darts', name: 'Darts', icon: '🎯', weight: 1, key: 'Darts 🎯' },
+            { id: 'volleyball', name: 'Volleyball', icon: '🏐', weight: 1.5, key: 'Volleyball 🏐' }, // Volley is larger/team weighted
+            { id: 'beer_pong', name: 'Beer Pong', icon: '🍺', weight: 1, key: 'Beer Pong 🍺' },
+            { id: 'flip_cup', name: 'Flip Cup', icon: '🥤', weight: 1, key: 'Flip Cup 🥤' },
+            { id: 'cannonball', name: 'Cannonball Contest', icon: '💣', weight: 1, key: 'Cannonball Contest 💣' },
+            { id: 'cornhole', name: 'Cornhole', icon: '🌽', weight: 1, key: 'Cornhole 🌽' },
+            { id: 'smash', name: 'Super Smash Bros.', icon: '🎮', weight: 1, key: 'Super Smash Bros. 🎮' }
+        ];
+
+        // Default local roster built from real Google Survey responses snippet data
+        let competitors = [
+            // The OGs
             {
-                name: "The OGs",
-                color: "border-orange-500",
-                badgeBg: "bg-orange-500/10 text-orange-400",
-                power: 93,
-                smashMeta: "Casual / Comfortable",
-                vibe: "True to the name, this team plays hard-nosed, gritty defense. Evan heavily anchors this group on the physical yard and table games.",
-                players: [
-                    { name: "Evan Edgar", rating: 42, smash: "Casual" },
-                    { name: "Alex McKeen", rating: 27, smash: "Comfortable" },
-                    { name: "Salah Balawi", rating: 24, smash: "Casual" }
-                ]
+                name: "Evan Edgar",
+                team: "The OGs",
+                hydration: "🌊 Fluid Dynamics Specialist: I came here to drink, not to think.",
+                ratings: { pool: 5, air_hockey: 3, foosball: 4, darts: 5, volleyball: 5, beer_pong: 5, flip_cup: 5, cannonball: 3, cornhole: 5, smash: 2 },
+                smash: "Casual",
+                alcohol: ["Light Beers", "IPAs & Craft Beers", "Imported Beers", "Stouts / Wheats", "Tequila", "Whiskey, Bourbon", "Rum", "Gin", "Canned Iced Teas"],
+                nonAlcoholic: ["Energy Drinks", "Lemon-Lime Sodas", "Ginger Ale", "Sports Hydration", "Coffee & Cold Brew"],
+                dietary: "Salah, Alex, Sam F: No Pork. Explicit request for Oreos."
             },
             {
-                name: "The Harts",
-                color: "border-blue-500",
-                badgeBg: "bg-blue-500/10 text-blue-400",
-                power: 94,
-                smashMeta: "High (Puto Pro Carry)",
-                vibe: "Pure hustle and non-stop energy. Puto serves as an elite anchor on the controller, while Stephan and Sharmari bring rock-solid consistency.",
-                players: [
-                    { name: "Puto", rating: 35, smash: "Pro" },
-                    { name: "Stephan", rating: 32, smash: "Comfortable" },
-                    { name: "Sharmari", rating: 27, smash: "Casual" }
-                ]
+                name: "Alex McKeen",
+                team: "The OGs",
+                hydration: "Steady Sipper: Pacing myself nicely to stay in optimal playing shape.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 3, cornhole: 3, smash: 3 },
+                smash: "Comfortable",
+                alcohol: ["Light Beers", "Imported Beers"],
+                nonAlcoholic: ["Lemon-Lime Sodas", "Sports Hydration"],
+                dietary: "No Pork."
             },
             {
-                name: "The Brunsons",
-                color: "border-green-500",
-                badgeBg: "bg-green-500/10 text-green-400",
-                power: 94,
-                smashMeta: "Balanced (3 Comfortables)",
-                vibe: "Your brother Josh steps into the leadership role of the ultimate 'No Weak Links' squad. Zero liabilities on the controller.",
-                players: [
-                    { name: "Big Stacks", rating: 35, smash: "Comfortable" },
-                    { name: "Zach Zweibel", rating: 34, smash: "Comfortable" },
-                    { name: "Josh", rating: 25, smash: "Comfortable" }
-                ]
+                name: "Salah Balawi",
+                team: "The OGs",
+                hydration: "Dedicated Athlete: Zero alcohol. 100% focused on holding the hardware.",
+                ratings: { pool: 2, air_hockey: 3, foosball: 3, darts: 2, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 2, cornhole: 3, smash: 2 },
+                smash: "Casual",
+                alcohol: ["None (Sober Sniper)"],
+                nonAlcoholic: ["Sports Hydration", "Lemon-Lime Sodas", "Ginger Ale"],
+                dietary: "No Pork. Mandatory request for Oreos at the store."
+            },
+            // The Harts
+            {
+                name: "Puto",
+                team: "The Harts",
+                hydration: "Social Drinker: Drinks in hand, big vibes, enjoying the team matches.",
+                ratings: { pool: 4, air_hockey: 4, foosball: 3, darts: 4, volleyball: 3, beer_pong: 4, flip_cup: 3, cannonball: 3, cornhole: 4, smash: 4 },
+                smash: "Pro",
+                alcohol: ["Light Beers", "Tequila", "Canned Cocktails"],
+                nonAlcoholic: ["Sports Hydration", "Lemon-Lime Sodas"],
+                dietary: "None."
             },
             {
-                name: "The KATs",
-                color: "border-purple-500",
-                badgeBg: "bg-purple-500/10 text-purple-400",
-                power: 96,
-                smashMeta: "Overkill / Sweaty (2 Pros)",
-                vibe: "Pure offensive spacing and firepower. With Sam and Chris sharing the couch, they are all but guaranteed to clean out the video game bracket.",
-                players: [
-                    { name: "David", rating: 33, smash: "Novice" },
-                    { name: "Sam Fregly", rating: 32, smash: "Pro" },
-                    { name: "Chris Owens", rating: 31, smash: "Pro" }
-                ]
+                name: "Stephan",
+                team: "The Harts",
+                hydration: "Social Drinker: Savoring cocktails but here to sweep categories.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 4, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 4, cannonball: 3, cornhole: 3, smash: 3 },
+                smash: "Comfortable",
+                alcohol: ["Light Beers", "Seltzers"],
+                nonAlcoholic: ["Ginger Ale", "Sports Hydration"],
+                dietary: "Lactose Intolerant / Absolutely No Cilantro."
+            },
+            {
+                name: "Sharmari",
+                team: "The Harts",
+                hydration: "Steady Sipper: Focused on dynamic bracket performance.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 3, cornhole: 3, smash: 2 },
+                smash: "Casual",
+                alcohol: ["Light Beers", "Imported Beers"],
+                nonAlcoholic: ["Sports Hydration"],
+                dietary: "None."
+            },
+            // The Brunsons
+            {
+                name: "Big Stacks",
+                team: "The Brunsons",
+                hydration: "🌊 Fluid Dynamics Specialist: I came here to drink, not to think.",
+                ratings: { pool: 4, air_hockey: 4, foosball: 3, darts: 3, volleyball: 3, beer_pong: 4, flip_cup: 4, cannonball: 3, cornhole: 4, smash: 3 },
+                smash: "Comfortable",
+                alcohol: ["Light Beers", "Tequila", "Gin", "Seltzers"],
+                nonAlcoholic: ["Sports Hydration", "Coffee & Cold Brew"],
+                dietary: "None."
+            },
+            {
+                name: "Zach Zweibel",
+                team: "The Brunsons",
+                hydration: "Steady Sipper: Pacing himself elegantly through the high-stakes matchups.",
+                ratings: { pool: 3, air_hockey: 4, foosball: 4, darts: 4, volleyball: 3, beer_pong: 4, flip_cup: 4, cannonball: 2, cornhole: 4, smash: 3 },
+                smash: "Comfortable",
+                alcohol: ["Light Beers", "Seltzers"],
+                nonAlcoholic: ["Sports Hydration"],
+                dietary: "None."
+            },
+            {
+                name: "Josh",
+                team: "The Brunsons",
+                hydration: "Steady Sipper: Pacing myself nicely for optimal coordination.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 3, cornhole: 3, smash: 3 },
+                smash: "Comfortable",
+                alcohol: ["Light Beers", "IPAs & Craft Beers"],
+                nonAlcoholic: ["Sports Hydration"],
+                dietary: "None."
+            },
+            // The KATs
+            {
+                name: "David",
+                team: "The KATs",
+                hydration: "Social Drinker: Enjoys the celebration matches.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 2, cornhole: 3, smash: 1 },
+                smash: "Novice",
+                alcohol: ["Ciders", "Imported Beers"],
+                nonAlcoholic: ["Sports Hydration"],
+                dietary: "Keeps Kosher / Jewish Dietary Standards."
+            },
+            {
+                name: "Sam Fregly",
+                team: "The KATs",
+                hydration: "Dedicated Athlete: Zero alcohol. 100% focused on controllers.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 4, beer_pong: 3, flip_cup: 4, cannonball: 3, cornhole: 3, smash: 4 },
+                smash: "Pro",
+                alcohol: ["None (Sober Sniper)"],
+                nonAlcoholic: ["0-Proof / Non-Alcoholic Beers", "Sports Hydration", "Coffee & Cold Brew"],
+                dietary: "No Pork. Requested NA Beers at the store."
+            },
+            {
+                name: "Chris Owens",
+                team: "The KATs",
+                hydration: "Social Drinker: Keeps it balanced and fires up under pressure.",
+                ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 4, flip_cup: 4, cannonball: 3, cornhole: 4, smash: 4 },
+                smash: "Pro",
+                alcohol: ["Light Beers", "Seltzers"],
+                nonAlcoholic: ["Sports Hydration"],
+                dietary: "None."
             }
         ];
 
-        // RENDER TEAMS
-        const gridContainer = document.getElementById('teams-grid');
-        gridContainer.innerHTML = teamData.map(team => {
-            // Isolating the player mapping logic prevents nested backtick issues
-            const playersHtml = team.players.map(p => `
-                <div class="flex items-center justify-between bg-black/20 px-3 py-2 rounded-xl border border-white/5">
-                    <div class="flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-knicks-blue"></span>
-                        <span class="text-sm font-semibold text-gray-200">${p.name}</span>
+        // Team metadata
+        const teamMetadata = {
+            "The OGs": { color: "border-orange-500 text-orange-400", badgeBg: "bg-orange-500/10 text-orange-400", hex: "#f97316" },
+            "The Harts": { color: "border-blue-500 text-blue-400", badgeBg: "bg-blue-500/10 text-blue-400", hex: "#3b82f6" },
+            "The Brunsons": { color: "border-green-500 text-green-400", badgeBg: "bg-green-500/10 text-green-400", hex: "#22c55e" },
+            "The KATs": { color: "border-purple-500 text-purple-400", badgeBg: "bg-purple-500/10 text-purple-400", hex: "#a855f7" }
+        };
+
+        // In-memory score sheets local database
+        let activeEventIndex = 0;
+        let eventScores = {};
+
+        // Resolve Firestore strict collection paths based on standard artifacts app ID
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'zzbachelorcup';
+        let initialLoadDone = false;
+
+        // Firebase Auth initialization (conforming to strict ruleset)
+        const initAuthAndSync = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Firebase Auth initialization failed:", err);
+                document.getElementById('db-status-badge').innerHTML = `
+                    <span class="w-2 h-2 bg-red-500 rounded-full inline-block"></span> Auth Failed
+                `;
+            }
+        };
+
+        // Trigger on DOM load
+        window.onload = function() {
+            initEventScoresPlaceholder();
+            initAuthAndSync();
+        };
+
+        // Create default empty schema placeholder
+        function initEventScoresPlaceholder() {
+            events.forEach(evt => {
+                eventScores[evt.id] = {
+                    completed: false,
+                    matches: {
+                        sf1: { t1: "The OGs", t2: "The KATs", s1: 0, s2: 0 },
+                        sf2: { t1: "The Harts", t2: "The Brunsons", s1: 0, s2: 0 },
+                        third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
+                        finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
+                    },
+                    rankings: []
+                };
+            });
+        }
+
+        // Setup live real-time state listeners once authorized
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Connection indicators
+                const statusBadge = document.getElementById('db-status-badge');
+                statusBadge.innerHTML = `
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> DB Sync Live
+                `;
+                statusBadge.classList.remove('text-slate-400');
+                statusBadge.classList.add('text-emerald-400', 'border-emerald-500/20', 'bg-emerald-950/20');
+
+                setupRealtimeFirestoreSync();
+            }
+        });
+
+        // Sync local variables automatically with Firebase Firestore
+        function setupRealtimeFirestoreSync() {
+            const stateCollectionName = 'state'; // Collection name variable
+            const competitorsDocRef = doc(db, 'artifacts', appId, 'public', 'data', stateCollectionName, 'competitors');
+            const eventScoresDocRef = doc(db, 'artifacts', appId, 'public', 'data', stateCollectionName, 'eventScores');
+
+            // Competitors realtime sync listener
+            onSnapshot(competitorsDocRef, (snap) => {
+                if (snap.exists()) {
+                    competitors = snap.data().list;
+                    renderRosters();
+                    renderCommishDashboard();
+                    calculateArenaStandings();
+                } else {
+                    // Seed initial state in DB
+                    setDoc(competitorsDocRef, { list: competitors });
+                }
+            }, (error) => {
+                console.error("Failed to load live competitors state:", error);
+            });
+
+            // Event Scores realtime sync listener
+            onSnapshot(eventScoresDocRef, (snap) => {
+                if (snap.exists()) {
+                    eventScores = snap.data().scores;
+                    renderEventSelector();
+                    loadActiveEvent();
+                    calculateArenaStandings();
+                    initialLoadDone = true;
+                } else {
+                    // Seed initial state in DB
+                    setDoc(eventScoresDocRef, { scores: eventScores }).then(() => {
+                        initialLoadDone = true;
+                    });
+                }
+            }, (error) => {
+                console.error("Failed to load live event scoring brackets state:", error);
+            });
+        }
+
+        // State update routines back to Firestore
+        async function saveCompetitorsStateToCloud() {
+            try {
+                const competitorsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'state', 'competitors');
+                await setDoc(competitorsDocRef, { list: competitors });
+            } catch (err) {
+                console.error("Error writing to competitors state database:", err);
+                showToast("⚠️ Cloud database write failure! Check Firebase permissions.");
+            }
+        }
+
+        async function saveEventScoresStateToCloud() {
+            try {
+                const eventScoresDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'state', 'eventScores');
+                await setDoc(eventScoresDocRef, { scores: eventScores });
+            } catch (err) {
+                console.error("Error writing to brackets event database:", err);
+                showToast("⚠️ Cloud database write failure! Check Firebase permissions.");
+            }
+        }
+
+        // Tab selection logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-knicks-blue', 'text-white', 'shadow-md');
+                btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5');
+            });
+
+            document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+            const targetBtn = document.getElementById(`tab-btn-${tabId}`);
+            targetBtn.classList.add('bg-knicks-blue', 'text-white', 'shadow-md');
+            targetBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5');
+        }
+
+        // Event panel logic
+        function renderEventSelector() {
+            const selectorContainer = document.getElementById('event-selector-grid');
+            if (!selectorContainer) return;
+
+            selectorContainer.innerHTML = events.map((evt, idx) => {
+                const isCompleted = eventScores[evt.id]?.completed;
+                const isActive = idx === activeEventIndex;
+                
+                let borderClass = "border-white/5";
+                let bgClass = "bg-slate-900/40";
+                
+                if (isActive) {
+                    borderClass = "border-knicks-orange shadow-lg";
+                    bgClass = "bg-knicks-orange/10";
+                } else if (isCompleted) {
+                    borderClass = "border-emerald-500/40";
+                    bgClass = "bg-emerald-950/20";
+                }
+
+                return `
+                    <button onclick="selectEvent(${idx})" class="${bgClass} border-2 ${borderClass} rounded-xl p-3 flex flex-col items-center justify-center transition-all cursor-pointer hover:scale-105">
+                        <span class="text-xl">${evt.icon}</span>
+                        <span class="text-[9px] font-mono font-bold uppercase truncate max-w-full text-center mt-1 block">${evt.name.split(' ')[0]}</span>
+                        ${isCompleted ? '<span class="text-[8px] font-mono text-emerald-400 mt-0.5 block font-bold">✓ LOCKED</span>' : '<span class="text-[8px] font-mono text-gray-500 mt-0.5 block">OPEN</span>'}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectEvent(idx) {
+            activeEventIndex = idx;
+            renderEventSelector();
+            loadActiveEvent();
+        }
+
+        function loadActiveEvent() {
+            const currentEvent = events[activeEventIndex];
+            const data = eventScores[currentEvent.id];
+            if (!data) return;
+
+            document.getElementById('active-event-icon').innerText = currentEvent.icon;
+            document.getElementById('active-event-name').innerText = currentEvent.name;
+            document.getElementById('active-event-meta').innerText = `Bracket Weight: ${currentEvent.weight}x • Form Key: "${currentEvent.key}"`;
+
+            // Semifinals option populations
+            const teamNames = ["The OGs", "The Harts", "The Brunsons", "The KATs"];
+            
+            const sf1Select1 = document.getElementById('sf1-t1');
+            const sf1Select2 = document.getElementById('sf1-t2');
+            const sf2Select1 = document.getElementById('sf2-t1');
+            const sf2Select2 = document.getElementById('sf2-t2');
+
+            const populateOptions = (selectElem, selectedVal) => {
+                if (!selectElem) return;
+                selectElem.innerHTML = teamNames.map(name => `
+                    <option value="${name}" ${name === selectedVal ? 'selected' : ''}>${name}</option>
+                `).join('');
+            };
+
+            populateOptions(sf1Select1, data.matches.sf1.t1);
+            populateOptions(sf1Select2, data.matches.sf1.t2);
+            populateOptions(sf2Select1, data.matches.sf2.t1);
+            populateOptions(sf2Select2, data.matches.sf2.t2);
+
+            // Scores
+            document.getElementById('sf1-s1').value = data.matches.sf1.s1;
+            document.getElementById('sf1-s2').value = data.matches.sf1.s2;
+            document.getElementById('sf2-s1').value = data.matches.sf2.s1;
+            document.getElementById('sf2-s2').value = data.matches.sf2.s2;
+
+            document.getElementById('third-s1').value = data.matches.third.s1;
+            document.getElementById('third-s2').value = data.matches.third.s2;
+            document.getElementById('finals-s1').value = data.matches.finals.s1;
+            document.getElementById('finals-s2').value = data.matches.finals.s2;
+
+            recalculateNodePaths();
+        }
+
+        function updateCustomSeeding(matchKey, teamKey) {
+            const currentEvent = events[activeEventIndex];
+            const teamVal = document.getElementById(`${matchKey}-${teamKey}`).value;
+            eventScores[currentEvent.id].matches[matchKey][teamKey] = teamVal;
+            recalculateNodePaths();
+            saveEventScoresStateToCloud(); // Sync seedings with cloud instantly
+        }
+
+        // Live score editing triggers real-time cloud write to make sure everyone is synced up
+        function updateLiveMatchScores() {
+            recalculateNodePaths();
+            saveEventScoresStateToCloud();
+        }
+
+        function recalculateNodePaths() {
+            const currentEvent = events[activeEventIndex];
+            const data = eventScores[currentEvent.id];
+            if (!data) return;
+
+            // Get live scores from DOM
+            const sf1_1 = parseInt(document.getElementById('sf1-s1').value) || 0;
+            const sf1_2 = parseInt(document.getElementById('sf1-s2').value) || 0;
+            const sf2_1 = parseInt(document.getElementById('sf2-s1').value) || 0;
+            const sf2_2 = parseInt(document.getElementById('sf2-s2').value) || 0;
+
+            data.matches.sf1.s1 = sf1_1;
+            data.matches.sf1.s2 = sf1_2;
+            data.matches.sf2.s1 = sf2_1;
+            data.matches.sf2.s2 = sf2_2;
+
+            // SF1 Advancement
+            let sf1Winner = "SF1 Winner";
+            let sf1Loser = "SF1 Loser";
+            if (sf1_1 > sf1_2) {
+                sf1Winner = data.matches.sf1.t1;
+                sf1Loser = data.matches.sf1.t2;
+            } else if (sf1_2 > sf1_1) {
+                sf1Winner = data.matches.sf1.t2;
+                sf1Loser = data.matches.sf1.t1;
+            }
+
+            // SF2 Advancement
+            let sf2Winner = "SF2 Winner";
+            let sf2Loser = "SF2 Loser";
+            if (sf2_1 > sf2_2) {
+                sf2Winner = data.matches.sf2.t1;
+                sf2Loser = data.matches.sf2.t2;
+            } else if (sf2_2 > sf2_1) {
+                sf2Winner = data.matches.sf2.t2;
+                sf2Loser = data.matches.sf2.t1;
+            }
+
+            data.matches.third.t1 = sf1Loser;
+            data.matches.third.t2 = sf2Loser;
+            data.matches.finals.t1 = sf1Winner;
+            data.matches.finals.t2 = sf2Winner;
+
+            // Populate UI placeholders
+            document.getElementById('third-t1').innerText = sf1Loser;
+            document.getElementById('third-t2').innerText = sf2Loser;
+            document.getElementById('finals-t1').innerText = sf1Winner;
+            document.getElementById('finals-t2').innerText = sf2Winner;
+        }
+
+        // Commit and Lock Event rankings
+        function calculateEventRanks() {
+            recalculateNodePaths();
+
+            const currentEvent = events[activeEventIndex];
+            const data = eventScores[currentEvent.id];
+
+            const third_1 = parseInt(document.getElementById('third-s1').value) || 0;
+            const third_2 = parseInt(document.getElementById('third-s2').value) || 0;
+            const finals_1 = parseInt(document.getElementById('finals-s1').value) || 0;
+            const finals_2 = parseInt(document.getElementById('finals-s2').value) || 0;
+
+            data.matches.third.s1 = third_1;
+            data.matches.third.s2 = third_2;
+            data.matches.finals.s1 = finals_1;
+            data.matches.finals.s2 = finals_2;
+
+            if (data.matches.finals.t1.includes("Winner") || data.matches.finals.t2.includes("Winner")) {
+                showToast("⚠️ Cannot lock event: Decide Semifinal victors first!");
+                return;
+            }
+
+            let goldWinner = finals_1 > finals_2 ? data.matches.finals.t1 : data.matches.finals.t2;
+            let silverWinner = finals_1 > finals_2 ? data.matches.finals.t2 : data.matches.finals.t1;
+            let bronzeWinner = third_1 > third_2 ? data.matches.third.t1 : data.matches.third.t2;
+            let fourthWinner = third_1 > third_2 ? data.matches.third.t2 : data.matches.third.t1;
+
+            if (finals_1 === finals_2) {
+                goldWinner = data.matches.finals.t1;
+                silverWinner = data.matches.finals.t2;
+            }
+            if (third_1 === third_2) {
+                bronzeWinner = data.matches.third.t1;
+                fourthWinner = data.matches.third.t2;
+            }
+
+            data.rankings = [goldWinner, silverWinner, bronzeWinner, fourthWinner];
+            data.completed = true;
+
+            // Commit fully to Cloud
+            saveEventScoresStateToCloud().then(() => {
+                showToast(`✅ Locked ${currentEvent.name}! 1st: ${goldWinner}, 2nd: ${silverWinner}, 3rd: ${bronzeWinner}, 4th: ${fourthWinner}`);
+            });
+        }
+
+        function resetActiveEvent() {
+            const currentEvent = events[activeEventIndex];
+            eventScores[currentEvent.id] = {
+                completed: false,
+                matches: {
+                    sf1: { t1: "The OGs", t2: "The KATs", s1: 0, s2: 0 },
+                    sf2: { t1: "The Harts", t2: "The Brunsons", s1: 0, s2: 0 },
+                    third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
+                    finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
+                },
+                rankings: []
+            };
+
+            saveEventScoresStateToCloud().then(() => {
+                showToast(`🔄 Reset scores for ${currentEvent.name} globally.`);
+            });
+        }
+
+        // Competitor Ratings-driven Simulated Tournament bot
+        function quickSimulate() {
+            const currentEvent = events[activeEventIndex];
+            const data = eventScores[currentEvent.id];
+
+            const getTeamSkill = (teamName, sportId) => {
+                const teamCompetitors = competitors.filter(c => c.team === teamName);
+                return teamCompetitors.reduce((sum, c) => sum + (c.ratings[sportId] || 3), 0);
+            };
+
+            const t1 = data.matches.sf1.t1;
+            const t2 = data.matches.sf1.t2;
+            const t3 = data.matches.sf2.t1;
+            const t4 = data.matches.sf2.t2;
+
+            const skill1 = getTeamSkill(t1, currentEvent.id);
+            const skill2 = getTeamSkill(t2, currentEvent.id);
+            const skill3 = getTeamSkill(t3, currentEvent.id);
+            const skill4 = getTeamSkill(t4, currentEvent.id);
+
+            const runMatch = (s1, s2) => {
+                const total = s1 + s2;
+                const r = Math.random() * total;
+                const score1 = Math.floor(Math.random() * 3) + (r < s1 ? 3 : 0);
+                const score2 = Math.floor(Math.random() * 3) + (r >= s1 ? 3 : 0);
+                if (score1 === score2) {
+                    return Math.random() > 0.5 ? [score1 + 1, score2] : [score1, score2 + 1];
+                }
+                return [score1, score2];
+            };
+
+            const [sf1Score1, sf1Score2] = runMatch(skill1, skill2);
+            const [sf2Score1, sf2Score2] = runMatch(skill3, skill4);
+
+            document.getElementById('sf1-s1').value = sf1Score1;
+            document.getElementById('sf1-s2').value = sf1Score2;
+            document.getElementById('sf2-s1').value = sf2Score1;
+            document.getElementById('sf2-s2').value = sf2Score2;
+
+            recalculateNodePaths();
+
+            const winnerSF1 = sf1Score1 > sf1Score2 ? t1 : t2;
+            const loserSF1 = sf1Score1 > sf1Score2 ? t2 : t1;
+            const winnerSF2 = sf2Score1 > sf2Score2 ? t3 : t4;
+            const loserSF2 = sf2Score1 > sf2Score2 ? t4 : t3;
+
+            const skillWinner1 = getTeamSkill(winnerSF1, currentEvent.id);
+            const skillWinner2 = getTeamSkill(winnerSF2, currentEvent.id);
+            const skillLoser1 = getTeamSkill(loserSF1, currentEvent.id);
+            const skillLoser2 = getTeamSkill(loserSF2, currentEvent.id);
+
+            const [fScore1, fScore2] = runMatch(skillWinner1, skillWinner2);
+            const [bScore1, bScore2] = runMatch(skillLoser1, skillLoser2);
+
+            document.getElementById('third-s1').value = bScore1;
+            document.getElementById('third-s2').value = bScore2;
+            document.getElementById('finals-s1').value = fScore1;
+            document.getElementById('finals-s2').value = fScore2;
+
+            showToast(`🎲 Simulated ${currentEvent.name} outcomes dynamically based on competitor ratings!`);
+            updateLiveMatchScores();
+        }
+
+        // Live standings and cumulative point calculator
+        function calculateArenaStandings() {
+            const standings = {
+                "The OGs": { name: "The OGs", points: 0, gold: 0, silver: 0, bronze: 0, fourth: 0 },
+                "The Harts": { name: "The Harts", points: 0, gold: 0, silver: 0, bronze: 0, fourth: 0 },
+                "The Brunsons": { name: "The Brunsons", points: 0, gold: 0, silver: 0, bronze: 0, fourth: 0 },
+                "The KATs": { name: "The KATs", points: 0, gold: 0, silver: 0, bronze: 0, fourth: 0 }
+            };
+
+            let lockedEventsCount = 0;
+
+            events.forEach(evt => {
+                const scoreData = eventScores[evt.id];
+                if (scoreData && scoreData.completed && scoreData.rankings.length === 4) {
+                    lockedEventsCount++;
+                    const w = evt.weight;
+                    
+                    const first = scoreData.rankings[0];
+                    const second = scoreData.rankings[1];
+                    const third = scoreData.rankings[2];
+                    const fourth = scoreData.rankings[3];
+
+                    if (standings[first]) { standings[first].points += 4 * w; standings[first].gold++; }
+                    if (standings[second]) { standings[second].points += 3 * w; standings[second].silver++; }
+                    if (standings[third]) { standings[third].points += 2 * w; standings[third].bronze++; }
+                    if (standings[fourth]) { standings[fourth].points += 1 * w; standings[fourth].fourth++; }
+                }
+            });
+
+            // Set progress bars
+            const progressPercentage = (lockedEventsCount / 10) * 100;
+            document.getElementById('standings-progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('standings-progress-text').innerText = `${lockedEventsCount} / 10 Events Locked`;
+
+            // Sort by points
+            const sorted = Object.values(standings).sort((a, b) => b.points - a.points);
+
+            // Print sidebar leaderboard list
+            const container = document.getElementById('leaderboard-list');
+            if (!container) return;
+
+            container.innerHTML = sorted.map((team, idx) => {
+                let rankColor = "text-gray-400";
+                if(idx === 0) rankColor = "text-yellow-400";
+                if(idx === 1) rankColor = "text-gray-300";
+                if(idx === 2) rankColor = "text-amber-600";
+
+                const meta = teamMetadata[team.name] || { hex: "#fff" };
+                const teamPlayers = competitors.filter(c => c.team === team.name);
+                const firstNames = teamPlayers.map(p => p.name.split(' ')[0]).join(' • ');
+
+                // Sum competency points
+                const teamPower = teamPlayers.reduce((sum, player) => {
+                    const skillSum = Object.values(player.ratings).reduce((a, b) => a + b, 0);
+                    return sum + skillSum;
+                }, 0);
+
+                return `
+                    <div class="flex items-center justify-between bg-slate-900/80 border border-white/5 p-3 rounded-xl shadow-md relative overflow-hidden transition-all hover:border-white/10">
+                        <div class="absolute left-0 top-0 bottom-0 w-1" style="background-color: ${meta.hex}"></div>
+                        <div class="flex items-center gap-3 pl-1">
+                            <span class="font-arena text-sm ${rankColor} w-4 text-center">#${idx + 1}</span>
+                            <div>
+                                <p class="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
+                                    ${team.name}
+                                </p>
+                                <p class="text-[10px] font-mono text-gray-400">${firstNames}</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex items-center gap-4">
+                            <div class="hidden sm:block text-right">
+                                <span class="text-[8px] font-mono block text-gray-500 uppercase">Power</span>
+                                <span class="text-[10px] font-mono font-bold text-knicks-orange">${teamPower}</span>
+                            </div>
+                            <div>
+                                <span class="text-[8px] font-mono block text-gray-500 uppercase">Points</span>
+                                <span class="font-arena text-xl text-white font-mono">${team.points.toFixed(1).replace('.0', '')}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3 text-xs font-mono">
-                        <span class="text-gray-500">Smash: <strong class="text-gray-300 font-normal">${p.smash}</strong></span>
-                        <span class="bg-white/5 px-2 py-0.5 rounded text-knicks-orange font-bold">${p.rating}</span>
+                `;
+            }).join('');
+        }
+
+        // Render roster card grids
+        function renderRosters() {
+            const container = document.getElementById('rosters-grid');
+            if (!container) return;
+
+            const teamNames = ["The OGs", "The Harts", "The Brunsons", "The KATs"];
+
+            container.innerHTML = teamNames.map(tName => {
+                const meta = teamMetadata[tName];
+                const teamPlayers = competitors.filter(c => c.team === tName);
+                
+                const totalPower = teamPlayers.reduce((sum, p) => {
+                    return sum + Object.values(p.ratings).reduce((a, b) => a + b, 0);
+                }, 0);
+
+                const averageSmash = teamPlayers.map(p => p.smash).join(' • ');
+
+                const playerRows = teamPlayers.map(p => {
+                    const skillSum = Object.values(p.ratings).reduce((a, b) => a + b, 0);
+                    return `
+                        <div onclick="openPlayerModal('${p.name}')" class="group flex items-center justify-between bg-black/30 px-3 py-2.5 rounded-xl border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all cursor-pointer">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-knicks-blue group-hover:bg-knicks-orange transition-all"></span>
+                                <span class="text-sm font-semibold text-gray-200">${p.name}</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs font-mono">
+                                <span class="text-gray-500">Smash: <strong class="text-gray-300 font-normal">${p.smash}</strong></span>
+                                <span class="bg-white/5 px-2.5 py-0.5 rounded text-knicks-orange font-bold group-hover:bg-white/10 transition-all">${skillSum}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="team-roster-card bg-slate-900/40 border-t-4 ${meta.color} rounded-2xl p-5 shadow-lg backdrop-blur-sm flex flex-col justify-between" data-team="${tName}">
+                        <div>
+                            <div class="flex items-start justify-between border-b border-white/5 pb-3 mb-4">
+                                <div>
+                                    <h3 class="font-arena text-xl tracking-wide text-white">${tName}</h3>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider ${meta.badgeBg} px-2 py-0.5 rounded mt-1 inline-block">
+                                        Smash Meta: ${averageSmash}
+                                    </span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] font-mono text-gray-400 block uppercase tracking-wider">Total Power</span>
+                                    <span class="font-arena text-2xl knicks-orange">${totalPower}</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                ${playerRows}
+                            </div>
+                        </div>
                     </div>
+                `;
+            }).join('');
+        }
+
+        function filterTeams() {
+            const filterVal = document.getElementById('team-filter').value;
+            document.querySelectorAll('.team-roster-card').forEach(card => {
+                if (filterVal === 'all' || card.dataset.team === filterVal) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // Detailed overlay card profiles
+        function openPlayerModal(playerName) {
+            const player = competitors.find(c => c.name === playerName);
+            if (!player) return;
+
+            const meta = teamMetadata[player.team] || { hex: "#fff", color: "text-white" };
+
+            document.getElementById('modal-player-name').innerText = player.name;
+            document.getElementById('modal-player-team').innerText = `${player.team} Competitor`;
+            document.getElementById('modal-player-color').style.backgroundColor = meta.hex;
+            document.getElementById('modal-player-hydration').innerText = player.hydration;
+
+            const skillsContainer = document.getElementById('modal-player-skills');
+            skillsContainer.innerHTML = events.map(evt => {
+                const score = player.ratings[evt.id] || 3;
+                const widthPercent = (score / 5) * 100;
+                
+                let ratingColor = "bg-knicks-blue";
+                if (score >= 4.5) ratingColor = "bg-gradient-to-r from-knicks-blue to-knicks-orange";
+                else if (score >= 4.0) ratingColor = "bg-knicks-orange";
+
+                return `
+                    <div class="space-y-0.5">
+                        <div class="flex justify-between text-[10px] font-mono text-gray-400">
+                            <span>${evt.icon} ${evt.name}</span>
+                            <span class="text-white font-bold">${score}/5</span>
+                        </div>
+                        <div class="bg-black/50 h-2 rounded-full overflow-hidden w-full">
+                            <div class="${ratingColor} h-full rounded-full transition-all duration-500" style="width: ${widthPercent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const alcContainer = document.getElementById('modal-player-alcohol');
+            if (player.alcohol && player.alcohol.length && player.alcohol[0] !== "") {
+                alcContainer.innerHTML = player.alcohol.map(a => `<div class="font-mono text-[10px] text-gray-300">• ${a}</div>`).join('');
+            } else {
+                alcContainer.innerHTML = '<span class="text-[10px] text-gray-500 italic">No alcohol preference checked.</span>';
+            }
+
+            const naContainer = document.getElementById('modal-player-na');
+            if (player.nonAlcoholic && player.nonAlcoholic.length && player.nonAlcoholic[0] !== "") {
+                naContainer.innerHTML = player.nonAlcoholic.map(na => `<div class="font-mono text-[10px] text-gray-300">• ${na}</div>`).join('');
+            } else {
+                naContainer.innerHTML = '<span class="text-[10px] text-gray-500 italic">No non-alcoholic mixer preferences.</span>';
+            }
+
+            const dietaryContainer = document.getElementById('modal-player-dietary-container');
+            if (player.dietary && player.dietary !== "None." && player.dietary !== "None" && player.dietary !== "") {
+                dietaryContainer.classList.remove('hidden');
+                document.getElementById('modal-player-dietary').innerText = player.dietary;
+            } else {
+                dietaryContainer.classList.add('hidden');
+            }
+
+            document.getElementById('player-modal').classList.remove('hidden');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('player-modal').classList.add('hidden');
+        }
+
+        // Commissioner dashboard lists
+        function renderCommishDashboard() {
+            const soberCount = competitors.filter(c => {
+                const hydStr = (c.hydration || "").toLowerCase();
+                return hydStr.includes("zero alcohol") || hydStr.includes("sober sniper") || hydStr.includes("dedicated athlete");
+            }).length;
+
+            const porkCount = competitors.filter(c => {
+                const dietStr = (c.dietary || "").toLowerCase();
+                return dietStr.includes("pork") || dietStr.includes("no pork");
+            }).length;
+
+            const specialCount = competitors.filter(c => {
+                const dietStr = (c.dietary || "").toLowerCase();
+                return dietStr.includes("kosher") || dietStr.includes("jewish") || dietStr.includes("lactose") || dietStr.includes("cilantro");
+            }).length;
+
+            document.getElementById('commish-sober-count').innerText = soberCount;
+            document.getElementById('commish-pork-count').innerText = porkCount;
+            document.getElementById('commish-special-count').innerText = specialCount;
+
+            const dietList = document.getElementById('dietary-list-commish');
+            const dietRestrictedCompetitors = competitors.filter(c => c.dietary && c.dietary !== "None." && c.dietary !== "None" && c.dietary !== "");
+            
+            if (dietRestrictedCompetitors.length) {
+                dietList.innerHTML = dietRestrictedCompetitors.map(c => `
+                    <div class="py-2 flex items-start justify-between gap-4 font-mono">
+                        <strong class="text-white truncate min-w-[100px]">${c.name}:</strong>
+                        <span class="text-gray-400 text-left text-[11px]">${c.dietary}</span>
+                    </div>
+                `).join('');
+            } else {
+                dietList.innerHTML = '<span class="text-xs text-gray-500 py-3 block italic">No dietary restrictions currently flagged.</span>';
+            }
+
+            const hydList = document.getElementById('hydration-list-commish');
+            hydList.innerHTML = competitors.map(c => `
+                <div class="py-2 flex items-center justify-between gap-4 font-mono">
+                    <strong class="text-white truncate min-w-[100px]">${c.name}:</strong>
+                    <span class="text-gray-400 text-[11px] text-right truncate max-w-[200px]">${c.hydration.split(':')[0]}</span>
                 </div>
             `).join('');
 
-            return `
-                <div class="bg-slate-900/40 border-t-4 ${team.color} rounded-2xl p-5 shadow-lg backdrop-blur-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-start justify-between border-b border-white/5 pb-3 mb-4">
-                            <div>
-                                <h3 class="font-arena text-xl tracking-wide text-white">${team.name}</h3>
-                                <span class="text-[10px] font-mono uppercase tracking-wider ${team.badgeBg} px-2 py-0.5 rounded-md mt-1 inline-block">
-                                    ${team.smashMeta}
-                                </span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] font-mono text-gray-400 block uppercase tracking-wider">Total Power</span>
-                                <span class="font-arena text-2xl knicks-orange">${team.power}</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-400 italic mb-4 font-medium leading-relaxed">"${team.vibe}"</p>
-                        <div class="space-y-2">
-                            ${playersHtml}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+            // Automatic Liquor lists compilations
+            const alcoholCounts = {};
+            const naCounts = {};
 
-        // RENDER LIVE LEADERBOARD (Sorted by Power for Base Standings)
-        const leaderboardContainer = document.getElementById('leaderboard-list');
-        const sortedTeams = [...teamData].sort((a, b) => b.power - a.power);
+            competitors.forEach(c => {
+                if (c.alcohol) {
+                    c.alcohol.forEach(a => {
+                        if (a && !a.includes("None")) {
+                            alcoholCounts[a] = (alcoholCounts[a] || 0) + 1;
+                        }
+                    });
+                }
+                if (c.nonAlcoholic) {
+                    c.nonAlcoholic.forEach(na => {
+                        if (na) {
+                            naCounts[na] = (naCounts[na] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            const shoppingAlcoholList = document.getElementById('shopping-alcohol');
+            const sortedAlcohol = Object.entries(alcoholCounts).sort((a,b) => b[1] - a[1]);
+            if (sortedAlcohol.length) {
+                shoppingAlcoholList.innerHTML = sortedAlcohol.map(([item, votes]) => `
+                    <li class="flex justify-between items-center py-1 border-b border-white/5">
+                        <span class="truncate pr-2">🍻 ${item}</span>
+                        <span class="text-knicks-orange font-bold font-mono">${votes} request${votes > 1 ? 's' : ''}</span>
+                    </li>
+                `).join('');
+            } else {
+                shoppingAlcoholList.innerHTML = '<span class="text-xs text-gray-500">No alcohol requests found.</span>';
+            }
+
+            const shoppingNaList = document.getElementById('shopping-na');
+            const sortedNa = Object.entries(naCounts).sort((a,b) => b[1] - a[1]);
+            
+            const explicitNotes = [];
+            competitors.forEach(c => {
+                const d = (c.dietary || "").toLowerCase();
+                if (d.includes("oreo")) explicitNotes.push("Salah requested Oreos 🍪");
+                if (d.includes("na beer") || d.includes("0-proof")) explicitNotes.push("Sam F requested 0-Proof/NA Beer 🍺");
+            });
+
+            let naListHtml = sortedNa.map(([item, votes]) => `
+                <li class="flex justify-between items-center py-1 border-b border-white/5">
+                    <span class="truncate pr-2">🥤 ${item}</span>
+                    <span class="text-sky-400 font-bold font-mono">${votes} request${votes > 1 ? 's' : ''}</span>
+                </li>
+            `).join('');
+
+            if (explicitNotes.length) {
+                naListHtml += `<li class="mt-3 pt-2 border-t border-white/10 text-[10px] text-yellow-400 space-y-1 block font-sans">
+                    <strong>⚠️ Explicit Commissioner Requests:</strong>
+                    ${explicitNotes.map(note => `<div class="font-mono text-gray-300">• ${note}</div>`).join('')}
+                </li>`;
+            }
+
+            if (sortedNa.length || explicitNotes.length) {
+                shoppingNaList.innerHTML = naListHtml;
+            } else {
+                shoppingNaList.innerHTML = '<span class="text-xs text-gray-500">No mixers or snacks preferences recorded.</span>';
+            }
+        }
+
+        // Dialog box toaster feedback notification
+        function showToast(message) {
+            const box = document.getElementById('toast-box');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.innerText = message;
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
+        }
+
+        function hideToast() {
+            document.getElementById('toast-box').classList.add('hidden');
+        }
+
+        // CSV parsing algorithms
+        function parseCSV(text) {
+            let p = 0;
+            let r = [];
+            let q = false;
+            let row = [''];
+            while (p < text.length) {
+                let c = text[p];
+                if (c === '"') {
+                    q = !q;
+                } else if (c === ',' && !q) {
+                    row.push('');
+                } else if ((c === '\r' || c === '\n') && !q) {
+                    if (c === '\r' && text[p+1] === '\n') { p++; }
+                    r.push(row);
+                    row = [''];
+                } else {
+                    row[row.length - 1] += c;
+                }
+                p++;
+            }
+            if (row.length > 1 || row[0] !== '') {
+                r.push(row);
+            }
+            return r;
+        }
+
+        // Sync uploaded google form csv file
+        function syncCSVData(csvRows) {
+            const logEl = document.getElementById('parse-logs');
+            logEl.innerHTML = "";
+
+            if (csvRows.length < 2) {
+                logEl.innerHTML = "❌ CSV file does not contain enough records (Header row + Data expected).";
+                return;
+            }
+
+            const header = csvRows[0].map(h => h.trim());
+            
+            const nameIndex = header.findIndex(h => h.toLowerCase().includes("name"));
+            const hydrationIndex = header.findIndex(h => h.toLowerCase().includes("hydration"));
+            const poolIndex = header.findIndex(h => h.toLowerCase().includes("pool"));
+            const hockeyIndex = header.findIndex(h => h.toLowerCase().includes("hockey"));
+            const foosballIndex = header.findIndex(h => h.toLowerCase().includes("foosball"));
+            const dartsIndex = header.findIndex(h => h.toLowerCase().includes("darts"));
+            const volleyIndex = header.findIndex(h => h.toLowerCase().includes("volleyball"));
+            const pongIndex = header.findIndex(h => h.toLowerCase().includes("pong"));
+            const flipIndex = header.findIndex(h => h.toLowerCase().includes("flip cup"));
+            const cannonballIndex = header.findIndex(h => h.toLowerCase().includes("cannonball"));
+            const cornholeIndex = header.findIndex(h => h.toLowerCase().includes("cornhole"));
+            const smashIndex = header.findIndex(h => h.toLowerCase().includes("smash"));
+            const alcIndex = header.findIndex(h => h.toLowerCase().includes("alcohol preferences"));
+            const naIndex = header.findIndex(h => h.toLowerCase().includes("non-alcoholic"));
+            const dietaryIndex = header.findIndex(h => h.toLowerCase().includes("allergies") || h.toLowerCase().includes("restrictions") || h.toLowerCase().includes("dietary"));
+
+            let updateCount = 0;
+
+            for (let i = 1; i < csvRows.length; i++) {
+                const row = csvRows[i];
+                if (row.length < 2) continue;
+
+                const rawName = row[nameIndex] || "";
+                if (!rawName) continue;
+
+                let match = competitors.find(comp => {
+                    const cNameLower = comp.name.toLowerCase();
+                    const rNameLower = rawName.toLowerCase();
+                    return cNameLower.includes(rNameLower) || rNameLower.includes(cNameLower);
+                });
+
+                if (match) {
+                    if (hydrationIndex !== -1) match.hydration = row[hydrationIndex].trim();
+                    
+                    const updateRating = (colIndex, fieldKey) => {
+                        if (colIndex !== -1 && row[colIndex]) {
+                            const val = parseInt(row[colIndex]);
+                            if (!isNaN(val)) {
+                                match.ratings[fieldKey] = val;
+                            }
+                        }
+                    };
+
+                    updateRating(poolIndex, 'pool');
+                    updateRating(hockeyIndex, 'air_hockey');
+                    updateRating(foosballIndex, 'foosball');
+                    updateRating(dartsIndex, 'darts');
+                    updateRating(volleyIndex, 'volleyball');
+                    updateRating(pongIndex, 'beer_pong');
+                    updateRating(flipIndex, 'flip_cup');
+                    updateRating(cannonballIndex, 'cannonball');
+                    updateRating(cornholeIndex, 'cornhole');
+
+                    if (smashIndex !== -1 && row[smashIndex]) {
+                        const smashText = row[smashIndex];
+                        if (smashText.includes("Novice") || smashText.includes("novice")) {
+                            match.ratings.smash = 1;
+                            match.smash = "Novice";
+                        } else if (smashText.includes("Comfortable") || smashText.includes("comfortable")) {
+                            match.ratings.smash = 3;
+                            match.smash = "Comfortable";
+                        } else if (smashText.includes("Pro") || smashText.includes("pro")) {
+                            match.ratings.smash = 4;
+                            match.smash = "Pro";
+                        } else if (smashText.includes("Super Pro") || smashText.includes("super pro") || smashText.includes("Elite")) {
+                            match.ratings.smash = 5;
+                            match.smash = "Super Pro";
+                        } else {
+                            match.ratings.smash = 2;
+                            match.smash = "Casual";
+                        }
+                    }
+
+                    if (alcIndex !== -1 && row[alcIndex]) {
+                        match.alcohol = row[alcIndex].split(',').map(s => s.trim().replace(/"/g, ''));
+                    }
+
+                    if (naIndex !== -1 && row[naIndex]) {
+                        match.nonAlcoholic = row[naIndex].split(',').map(s => s.trim().replace(/"/g, ''));
+                    }
+
+                    if (dietaryIndex !== -1 && row[dietaryIndex]) {
+                        match.dietary = row[dietaryIndex].trim();
+                    }
+
+                    updateCount++;
+                    logEl.innerHTML += `<div>✅ Imported survey preferences for <strong class="text-white">${match.name}</strong></div>`;
+                } else {
+                    logEl.innerHTML += `<div class="text-amber-500">⚠️ Could not resolve competitor named: "${rawName}"</div>`;
+                }
+            }
+
+            logEl.innerHTML += `<div class="text-emerald-400 font-bold mt-2">🎉 CSV Parse finished! Updated ${updateCount} player profiles.</div>`;
+            
+            // Push overall updated dataset directly back to Firestore
+            saveCompetitorsStateToCloud().then(() => {
+                showToast(`🔄 Synchronized database! Competitor sheets and rosters updated successfully.`);
+                renderRosters();
+                calculateArenaStandings();
+                renderCommishDashboard();
+            });
+        }
+
+        // CSV helper bindings
+        function handleFileSelect(evt) {
+            const file = evt.target.files[0];
+            if (!file) return;
+            readCSVFile(file);
+        }
+
+        function readCSVFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const parsed = parseCSV(text);
+                syncCSVData(parsed);
+            };
+            reader.readAsText(file);
+        }
+
+        function parsePasteCSV() {
+            const rawText = document.getElementById('raw-csv-paste').value;
+            if (!rawText.trim()) {
+                showToast("⚠️ Paste raw CSV spreadsheet data before processing.");
+                return;
+            }
+            const parsed = parseCSV(rawText);
+            syncCSVData(parsed);
+        }
+
+        // Set module scope functions to window scope so that inline html button actions execute flawlessly
+        window.switchTab = switchTab;
+        window.selectEvent = selectEvent;
+        window.updateCustomSeeding = updateCustomSeeding;
+        window.updateLiveMatchScores = updateLiveMatchScores;
+        window.calculateEventRanks = calculateEventRanks;
+        window.resetActiveEvent = resetActiveEvent;
+        window.quickSimulate = quickSimulate;
+        window.filterTeams = filterTeams;
+        window.openPlayerModal = openPlayerModal;
+        window.closePlayerModal = closePlayerModal;
+        window.handleFileSelect = handleFileSelect;
+        window.parsePasteCSV = parsePasteCSV;
+        window.hideToast = hideToast;
+
+        // Setup Drag & Drop listeners
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.addEventListener('click', () => document.getElementById('csv-file-input').click());
         
-        leaderboardContainer.innerHTML = sortedTeams.map((team, index) => {
-            let rankColor = "text-gray-400";
-            if(index === 0) rankColor = "text-yellow-400";
-            if(index === 1) rankColor = "text-gray-300";
-            if(index === 2) rankColor = "text-amber-600";
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('bg-black/80', 'border-knicks-orange');
+        });
 
-            return `
-                <div class="flex items-center justify-between bg-slate-900/80 border border-white/5 p-3 rounded-xl shadow-md">
-                    <div class="flex items-center gap-3">
-                        <span class="font-arena text-sm ${rankColor} w-4 text-center">#${index + 1}</span>
-                        <div>
-                            <p class="text-sm font-bold text-white tracking-wide">${team.name}</p>
-                            <p class="text-[10px] font-mono text-gray-500">${team.players.map(p => p.name.split(' ')[0]).join(' • ')}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="font-arena text-lg text-white font-mono">${team.power}</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('bg-black/80', 'border-knicks-orange');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('bg-black/80', 'border-knicks-orange');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                readCSVFile(file);
+            }
+        });
     </script>
 </body>
 </html>
