@@ -154,6 +154,14 @@
                 <button onclick="switchTab('scoring')" id="tab-btn-scoring" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
                     ⚔️ EVENTS &amp; BRACKETS
                 </button>
+
+                <button onclick="switchTab('drinks')" id="tab-btn-drinks" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                    🍹 DRINK PREFS
+                </button>
+
+                <button onclick="switchTab('schedule')" id="tab-btn-schedule" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                    📺 TV SCHEDULE
+                </button>
             </div>
 
             <!-- Toast -->
@@ -387,6 +395,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Drinks Tab -->
+            <div id="tab-content-drinks" class="tab-pane hidden space-y-6">
+                <div class="text-center py-12 text-gray-500 font-mono text-sm">
+                    Loading drink preferences...
+                </div>
+            </div>
+
+            <!-- TV Schedule Tab -->
+            <div id="tab-content-schedule" class="tab-pane hidden space-y-6">
+                <div class="text-center py-12 text-gray-500 font-mono text-sm">
+                    Loading TV Schedule...
+                </div>
+            </div>
         </div>
 
         <!-- Right Standings Panel -->
@@ -536,6 +558,61 @@
             { id: "smash", name: "Super Smash Bros.", shortName: "Smash Bros.", icon: "🎮", weight: 1, key: "Super Smash Bros. 🎮" }
         ];
 
+        const tvSchedule = [
+            {
+                id: "yankees1",
+                sport: "Baseball",
+                icon: "⚾",
+                event: "Yankees @ Blue Jays",
+                time: "Friday, June 12 at 7:37 PM EDT",
+                timestamp: "2026-06-12T19:37:00-04:00",
+                channel: "YES Network / Sportsnet",
+                tag: "⚾ MLB Game 1",
+                glowColor: "border-sky-500/20 shadow-sky-500/5",
+                badgeBg: "bg-sky-500/10 text-sky-400 border border-sky-500/20"
+            },
+            {
+                id: "usa_soccer",
+                sport: "Soccer",
+                icon: "⚽",
+                event: "USA vs Paraguay",
+                time: "Friday, June 12 at 9:00 PM EDT",
+                timestamp: "2026-06-12T21:00:00-04:00",
+                channel: "FOX",
+                tag: "🏆 World Cup Game",
+                glowColor: "border-red-500/20 shadow-red-500/5",
+                badgeBg: "bg-red-500/10 text-red-400 border border-red-500/20"
+            },
+            {
+                id: "yankees2",
+                sport: "Baseball",
+                icon: "⚾",
+                event: "Yankees @ Blue Jays",
+                time: "Saturday, June 13 at 3:07 PM EDT",
+                timestamp: "2026-06-13T15:07:00-04:00",
+                channel: "YES Network / Sportsnet",
+                tag: "⚾ MLB Game 2",
+                glowColor: "border-sky-500/20 shadow-sky-500/5",
+                badgeBg: "bg-sky-500/10 text-sky-400 border border-sky-500/20"
+            },
+            {
+                id: "knicks_spurs",
+                sport: "Basketball",
+                icon: "🏀",
+                event: "Knicks @ Spurs Game 5",
+                time: "Saturday, June 13 at 8:30 PM EDT",
+                timestamp: "2026-06-13T20:30:00-04:00",
+                channel: "ESPN / ABC",
+                tag: "🏀 NBA Finals Game 5",
+                glowColor: "border-orange-500/30 shadow-orange-500/10",
+                badgeBg: "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+            }
+        ];
+
+        let activeScheduleDayFilter = "all";
+        let activeScheduleSportFilter = "all";
+        let starredEvents = JSON.parse(localStorage.getItem("starredEvents") || "[]");
+
         let competitors = [
             {
                 name: "Evan",
@@ -543,7 +620,7 @@
                 hydration: "🌊 Fluid Dynamics Specialist: I came here to drink, not to think.",
                 ratings: { pool: 5, air_hockey: 3, foosball: 4, darts: 5, volleyball: 5, beer_pong: 5, flip_cup: 5, cannonball: 3, cornhole: 5, smash: 2 },
                 smash: "Casual",
-                alcohol: ["Light Beers", "IPAs & Craft Beers", "Imported Beers", "Stouts / Wheats", "Tequila", "Whiskey, Bourbon", "Rum", "Gin", "Canned Iced Teas"],
+                alcohol: ["Light Beers", "IPAs & Craft Beers", "Imported Beers", "Stouts / Wheats", "Tequila", "Whiskey, Bourbon", "Rum", "Gin", "Canned Iced Teas", "Seltzers"],
                 nonAlcoholic: ["Energy Drinks", "Lemon-Lime Sodas", "Ginger Ale", "Sports Hydration", "Coffee & Cold Brew"],
                 dietary: "Salah, Alex, Sam F: No Pork. Explicit request for Oreos."
             },
@@ -553,8 +630,8 @@
                 hydration: "Steady Sipper: Pacing myself nicely to stay in optimal playing shape.",
                 ratings: { pool: 4, air_hockey: 2, foosball: 1, darts: 3, volleyball: 2, beer_pong: 4, flip_cup: 1, cannonball: 3, cornhole: 4, smash: 3 },
                 smash: "Comfortable",
-                alcohol: ["Light Beers", "Imported Beers"],
-                nonAlcoholic: ["Lemon-Lime Sodas", "Sports Hydration"],
+                alcohol: ["Tequila", "Whiskey, Bourbon", "Vodka", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"],
+                nonAlcoholic: ["Energy Drinks", "Root Beer & Cream Sodas", "Sports Hydration", "Juices"],
                 dietary: "No Pork."
             },
             {
@@ -564,7 +641,7 @@
                 ratings: { pool: 3, air_hockey: 3, foosball: 2, darts: 3, volleyball: 2, beer_pong: 3, flip_cup: 1, cannonball: 3, cornhole: 3, smash: 2 },
                 smash: "Casual",
                 alcohol: ["None (Sober Sniper)"],
-                nonAlcoholic: ["Sports Hydration", "Lemon-Lime Sodas", "Ginger Ale"],
+                nonAlcoholic: ["Energy Drinks", "Cola", "Ginger Ale", "Juices", "Coffee & Cold Brew"],
                 dietary: "No Pork. Mandatory request for Oreos at the store."
             },
             {
@@ -573,8 +650,8 @@
                 hydration: "Social Drinker: Drinks in hand, big vibes, enjoying the team matches.",
                 ratings: { pool: 4, air_hockey: 3, foosball: 5, darts: 4, volleyball: 3, beer_pong: 4, flip_cup: 4, cannonball: 2, cornhole: 2, smash: 4 },
                 smash: "Pro",
-                alcohol: ["Light Beers", "Tequila", "Canned Cocktails"],
-                nonAlcoholic: ["Sports Hydration", "Lemon-Lime Sodas"],
+                alcohol: ["Light Beers", "Imported Beers", "Tequila", "Whiskey, Bourbon", "Vodka", "Rum", "Gin", "Canned Iced Teas", "Seltzers"],
+                nonAlcoholic: ["Energy Drinks", "Cola", "Lemon-Lime Sodas", "Tonic & Club Soda", "Sports Hydration"],
                 dietary: "None."
             },
             {
@@ -583,8 +660,8 @@
                 hydration: "Social Drinker: Savoring cocktails but here to sweep categories.",
                 ratings: { pool: 4, air_hockey: 3, foosball: 2, darts: 1, volleyball: 5, beer_pong: 5, flip_cup: 3, cannonball: 3, cornhole: 4, smash: 3 },
                 smash: "Comfortable",
-                alcohol: ["Light Beers", "Seltzers"],
-                nonAlcoholic: ["Ginger Ale", "Sports Hydration"],
+                alcohol: ["IPAs & Craft Beers", "Rum", "Canned Cocktails"],
+                nonAlcoholic: ["Root Beer & Cream Sodas", "Juices"],
                 dietary: "Lactose Intolerant / Absolutely No Cilantro."
             },
             {
@@ -593,8 +670,8 @@
                 hydration: "Steady Sipper: Focused on dynamic bracket performance.",
                 ratings: { pool: 2, air_hockey: 2, foosball: 3, darts: 1, volleyball: 2, beer_pong: 5, flip_cup: 5, cannonball: 3, cornhole: 2, smash: 2 },
                 smash: "Casual",
-                alcohol: ["Light Beers", "Imported Beers"],
-                nonAlcoholic: ["Sports Hydration"],
+                alcohol: ["IPAs & Craft Beers", "Imported Beers", "Tequila", "Whiskey, Bourbon", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"],
+                nonAlcoholic: ["Energy Drinks", "Cola", "Ginger Ale", "Flavored Seltzers", "Juices"],
                 dietary: "None."
             },
             {
@@ -613,8 +690,8 @@
                 hydration: "Steady Sipper: Pacing himself elegantly through the high-stakes matchups.",
                 ratings: { pool: 5, air_hockey: 3, foosball: 2, darts: 4, volleyball: 2, beer_pong: 4, flip_cup: 5, cannonball: 3, cornhole: 4, smash: 3 },
                 smash: "Comfortable",
-                alcohol: ["Light Beers", "Seltzers"],
-                nonAlcoholic: ["Sports Hydration"],
+                alcohol: ["Tequila", "Whiskey, Bourbon", "Gin", "Canned Iced Teas", "Seltzers", "Canned Cocktails"],
+                nonAlcoholic: ["Cola", "Lemon-Lime Sodas", "Tonic & Club Soda", "Sports Hydration", "Juices"],
                 dietary: "None."
             },
             {
@@ -623,8 +700,8 @@
                 hydration: "Steady Sipper: Pacing myself nicely for optimal coordination.",
                 ratings: { pool: 2, air_hockey: 3, foosball: 2, darts: 2, volleyball: 3, beer_pong: 3, flip_cup: 1, cannonball: 3, cornhole: 3, smash: 3 },
                 smash: "Comfortable",
-                alcohol: ["Light Beers", "IPAs & Craft Beers"],
-                nonAlcoholic: ["Sports Hydration"],
+                alcohol: ["Light Beers", "Imported Beers", "Tequila", "Vodka", "Rum", "Canned Iced Teas", "Seltzers", "Canned Cocktails"],
+                nonAlcoholic: ["Energy Drinks", "Lemon-Lime Sodas", "Ginger Ale", "Sports Hydration", "Coffee & Cold Brew"],
                 dietary: "None."
             },
             {
@@ -633,8 +710,8 @@
                 hydration: "Social Drinker: Enjoys the celebration matches.",
                 ratings: { pool: 2, air_hockey: 4, foosball: 4, darts: 4, volleyball: 5, beer_pong: 5, flip_cup: 4, cannonball: 1, cornhole: 3, smash: 2 },
                 smash: "Novice",
-                alcohol: ["Ciders", "Imported Beers"],
-                nonAlcoholic: ["Sports Hydration"],
+                alcohol: ["Tequila"],
+                nonAlcoholic: ["Cola"],
                 dietary: "Keeps Kosher / Jewish Dietary Standards."
             },
             {
@@ -644,7 +721,7 @@
                 ratings: { pool: 4, air_hockey: 5, foosball: 3, darts: 1, volleyball: 4, beer_pong: 5, flip_cup: 3, cannonball: 1, cornhole: 4, smash: 4 },
                 smash: "Pro",
                 alcohol: ["None (Sober Sniper)"],
-                nonAlcoholic: ["0-Proof / Non-Alcoholic Beers", "Sports Hydration", "Coffee & Cold Brew"],
+                nonAlcoholic: ["Juices"],
                 dietary: "No Pork. Requested NA Beers at the store."
             },
             {
@@ -653,8 +730,8 @@
                 hydration: "Social Drinker: Keeps it balanced and fires up under pressure.",
                 ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 3, cornhole: 3, smash: 4 },
                 smash: "Pro",
-                alcohol: ["Light Beers", "Seltzers"],
-                nonAlcoholic: ["Sports Hydration"],
+                alcohol: ["Light Beers", "Imported Beers", "Seltzers", "Canned Cocktails"],
+                nonAlcoholic: ["Coffee & Cold Brew"],
                 dietary: "None."
             }
         ];
@@ -749,13 +826,17 @@
             const competitorsDocRef = doc(db, "artifacts", appId, "public", "data", "state", "competitors");
             const eventScoresDocRef = doc(db, "artifacts", appId, "public", "data", "state", "eventScores");
 
+            // Write the correct local competitors data to Firestore to overwrite the incorrect DB state
+            setDoc(competitorsDocRef, { list: competitors }).catch((err) => {
+                console.error("Failed to sync correct competitor data to cloud:", err);
+            });
+
             onSnapshot(competitorsDocRef, (snap) => {
                 if (snap.exists() && Array.isArray(snap.data().list)) {
                     competitors = snap.data().list;
                     renderRosters();
                     calculateArenaStandings();
-                } else {
-                    setDoc(competitorsDocRef, { list: competitors });
+                    renderDrinksChart();
                 }
             }, (error) => {
                 console.error("Failed to load live competitors state:", error);
@@ -822,6 +903,10 @@
 
             if (tabId === "scoring") {
                 setTimeout(drawBracketLines, 100);
+            } else if (tabId === "drinks") {
+                renderDrinksChart();
+            } else if (tabId === "schedule") {
+                renderSchedule();
             }
         }
 
@@ -1297,6 +1382,76 @@
             }).join("");
         }
 
+        function renderDrinksChart() {
+            const container = document.getElementById("tab-content-drinks");
+            if (!container) return;
+
+            const alcCounts = {};
+            const naCounts = {};
+            const alcLovers = {};
+            const naLovers = {};
+
+            competitors.forEach((p) => {
+                if (p.alcohol) {
+                    p.alcohol.forEach((alc) => {
+                        alcCounts[alc] = (alcCounts[alc] || 0) + 1;
+                        if (!alcLovers[alc]) alcLovers[alc] = [];
+                        alcLovers[alc].push(p.name);
+                    });
+                }
+                if (p.nonAlcoholic) {
+                    p.nonAlcoholic.forEach((na) => {
+                        naCounts[na] = (naCounts[na] || 0) + 1;
+                        if (!naLovers[na]) naLovers[na] = [];
+                        naLovers[na].push(p.name);
+                    });
+                }
+            });
+
+            const sortedAlc = Object.entries(alcCounts).sort((a, b) => b[1] - a[1]);
+            const sortedNa = Object.entries(naCounts).sort((a, b) => b[1] - a[1]);
+
+            const buildChartSection = (title, items, loversMap, barColorClass) => {
+                const itemsHtml = items.map(([name, count]) => {
+                    const pct = (count / competitors.length) * 100;
+                    const lovers = loversMap[name].join(", ");
+
+                    return `
+                        <div class="group space-y-1.5 relative p-2.5 rounded-lg hover:bg-white/5 transition-all">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-gray-200 font-semibold truncate max-w-[70%]">${name}</span>
+                                <span class="text-knicks-orange font-bold">${count} ${count === 1 ? 'vote' : 'votes'}</span>
+                            </div>
+
+                            <div class="relative w-full h-3.5 bg-black/50 rounded-full overflow-hidden">
+                                <div class="${barColorClass} h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                            </div>
+
+                            <div class="hidden group-hover:block absolute z-20 left-4 right-4 -top-8 bg-slate-950 border border-white/10 rounded px-2 py-1 text-[10px] text-gray-300 font-mono shadow-xl text-center">
+                                Liked by: <span class="text-white font-bold">${lovers}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+
+                return `
+                    <div class="bg-slate-900/60 border border-white/5 rounded-2xl p-5 backdrop-blur-md shadow-xl space-y-4">
+                        <h3 class="font-arena text-lg text-white tracking-wide border-b border-white/5 pb-2">
+                            ${title}
+                        </h3>
+                        <div class="space-y-3">${itemsHtml}</div>
+                    </div>
+                `;
+            };
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    ${buildChartSection("🍹 Alcoholic Drink Preferences", sortedAlc, alcLovers, "bg-gradient-knicks")}
+                    ${buildChartSection("🥤 Non-Alcoholic / Mixer Choices", sortedNa, naLovers, "bg-gradient-to-r from-emerald-500 to-teal-400")}
+                </div>
+            `;
+        }
+
         function filterTeams() {
             const filterVal = document.getElementById("team-filter").value;
 
@@ -1383,6 +1538,177 @@
             document.getElementById("toast-box").classList.add("hidden");
         }
 
+        function getEventStatusText(evt) {
+            const eventTime = new Date(evt.timestamp).getTime();
+            const now = new Date().getTime();
+            const duration = 3 * 60 * 60 * 1000; // assume 3 hours duration
+
+            if (now < eventTime) {
+                const diff = eventTime - now;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                if (days > 0) {
+                    return `⏰ Starts in ${days}d ${hours}h`;
+                } else if (hours > 0) {
+                    return `⏰ Starts in ${hours}h ${minutes}m`;
+                } else {
+                    return `⏰ Starts in ${minutes}m`;
+                }
+            } else if (now >= eventTime && now < eventTime + duration) {
+                return `🔴 LIVE NOW / IN PROGRESS`;
+            } else {
+                return `🏁 COMPLETED`;
+            }
+        }
+
+        function updateFilterButtonStyles() {
+            const btnActiveDay = document.getElementById(`sched-filter-day-${activeScheduleDayFilter}`);
+            const btnActiveSport = document.getElementById(`sched-filter-sport-${activeScheduleSportFilter.toLowerCase()}`);
+
+            // Reset all day buttons
+            document.querySelectorAll("[id^='sched-filter-day-']").forEach((btn) => {
+                btn.className = "sched-filter-btn px-3 py-1.5 rounded bg-slate-900/60 text-gray-400 border border-white/5 hover:text-white hover:bg-white/5 transition-all cursor-pointer font-bold";
+            });
+            // Reset all sport buttons
+            document.querySelectorAll("[id^='sched-filter-sport-']").forEach((btn) => {
+                btn.className = "sched-filter-btn px-3 py-1.5 rounded bg-slate-900/60 text-gray-400 border border-white/5 hover:text-white hover:bg-white/5 transition-all cursor-pointer font-bold";
+            });
+
+            // Set active day button
+            if (btnActiveDay) {
+                btnActiveDay.className = "sched-filter-btn px-3 py-1.5 rounded bg-knicks-orange text-white border border-knicks-orange font-bold transition-all cursor-pointer";
+            }
+            // Set active sport button
+            if (btnActiveSport) {
+                btnActiveSport.className = "sched-filter-btn px-3 py-1.5 rounded bg-knicks-blue text-white border border-knicks-blue font-bold transition-all cursor-pointer";
+            }
+        }
+
+        function setScheduleFilter(type, value) {
+            if (type === "day") {
+                activeScheduleDayFilter = value;
+            } else if (type === "sport") {
+                activeScheduleSportFilter = value;
+            }
+            renderSchedule();
+        }
+
+        // Starred events watchlist toggle
+        function toggleStarEvent(eventId) {
+            const idx = starredEvents.indexOf(eventId);
+            if (idx === -1) {
+                starredEvents.push(eventId);
+                showToast("⭐ Added event to your watchlist!");
+            } else {
+                starredEvents.splice(idx, 1);
+                showToast("Removed event from your watchlist.");
+            }
+            localStorage.setItem("starredEvents", JSON.stringify(starredEvents));
+            renderSchedule();
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById("tab-content-schedule");
+            if (!container) return;
+
+            const filtered = tvSchedule.filter((evt) => {
+                const dayMatch = activeScheduleDayFilter === "all" || 
+                    (activeScheduleDayFilter === "friday" && evt.time.toLowerCase().includes("friday")) ||
+                    (activeScheduleDayFilter === "saturday" && evt.time.toLowerCase().includes("saturday"));
+                
+                const sportMatch = activeScheduleSportFilter === "all" || 
+                    evt.sport.toLowerCase() === activeScheduleSportFilter.toLowerCase();
+                
+                return dayMatch && sportMatch;
+            });
+
+            const cardsHtml = filtered.map((evt) => {
+                const isStarred = starredEvents.includes(evt.id);
+                const starIcon = isStarred ? "★" : "☆";
+                const starColor = isStarred ? "text-amber-400 font-bold scale-110" : "text-gray-500 hover:text-gray-300";
+                
+                const statusText = getEventStatusText(evt);
+                let statusBadgeClass = "bg-slate-950 text-amber-400 border border-amber-500/20";
+                if (statusText.includes("LIVE NOW")) {
+                    statusBadgeClass = "bg-red-950/40 text-red-400 border border-red-500/30 animate-pulse";
+                } else if (statusText.includes("COMPLETED")) {
+                    statusBadgeClass = "bg-slate-950 text-gray-500 border border-white/5";
+                }
+
+                return `
+                    <div class="group bg-slate-900/60 border border-white/5 rounded-2xl p-5 backdrop-blur-md shadow-xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl relative overflow-hidden ${evt.glowColor}">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${evt.sport === 'Baseball' ? 'from-sky-500 to-blue-600' : evt.sport === 'Soccer' ? 'from-red-500 to-blue-500' : 'from-orange-500 to-knicks-orange'}"></div>
+                        
+                        <button onclick="toggleStarEvent('${evt.id}')" class="absolute top-4 right-4 text-xl ${starColor} transition-all duration-200 hover:scale-125 focus:outline-none" title="${isStarred ? 'Unstar event' : 'Star event'}">
+                            ${starIcon}
+                        </button>
+
+                        <div>
+                            <span class="inline-block px-2.5 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider mb-3 ${evt.badgeBg}">
+                                ${evt.tag}
+                            </span>
+                            
+                            <h3 class="font-arena text-xl text-white tracking-wide mb-1 flex items-center gap-2">
+                                <span class="text-xl">${evt.icon}</span>
+                                ${evt.event}
+                            </h3>
+                            
+                            <p class="text-xs text-gray-400 font-mono flex items-center gap-1.5 mb-4">
+                                📺 Broadcast: <strong class="text-gray-200">${evt.channel}</strong>
+                            </p>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 font-mono">
+                            <div class="text-xs text-gray-300 font-semibold">
+                                📅 ${evt.time}
+                            </div>
+                            <div class="px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider ${statusBadgeClass}">
+                                ${statusText}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            const noMatchesHtml = `
+                <div class="col-span-1 md:col-span-2 text-center py-16 bg-slate-900/20 border border-white/5 rounded-2xl">
+                    <p class="text-gray-500 font-mono text-sm">No scheduled events match your current filter settings.</p>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-3 h-6 bg-knicks-orange rounded-sm"></span>
+                        <h2 class="font-arena text-2xl tracking-wide text-white">TV Broadcast Schedule</h2>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">📺 Catch the Live Action in the Lounge</span>
+                </div>
+
+                <!-- Interactive Filters -->
+                <div class="flex flex-wrap gap-2 text-xs font-mono mb-6 bg-black/40 p-2.5 rounded-xl border border-white/5">
+                    <button onclick="setScheduleFilter('day', 'all')" id="sched-filter-day-all" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">All Days</button>
+                    <button onclick="setScheduleFilter('day', 'friday')" id="sched-filter-day-friday" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">Friday</button>
+                    <button onclick="setScheduleFilter('day', 'saturday')" id="sched-filter-day-saturday" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">Saturday</button>
+
+                    <span class="w-[1px] h-6 bg-white/10 self-center mx-1"></span>
+
+                    <button onclick="setScheduleFilter('sport', 'all')" id="sched-filter-sport-all" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">All Sports</button>
+                    <button onclick="setScheduleFilter('sport', 'Baseball')" id="sched-filter-sport-baseball" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">⚾ MLB</button>
+                    <button onclick="setScheduleFilter('sport', 'Soccer')" id="sched-filter-sport-soccer" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">⚽ Soccer</button>
+                    <button onclick="setScheduleFilter('sport', 'Basketball')" id="sched-filter-sport-basketball" class="sched-filter-btn px-2.5 py-1.5 rounded transition-all">🏀 NBA</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    ${filtered.length ? cardsHtml : noMatchesHtml}
+                </div>
+            `;
+            
+            updateFilterButtonStyles();
+        }
+
         window.switchTab = switchTab;
         window.selectEvent = selectEvent;
         window.updateCustomSeeding = updateCustomSeeding;
@@ -1397,6 +1723,10 @@
         window.drawBracketLines = drawBracketLines;
         window.clickToWin = clickToWin;
         window.adjustScore = adjustScore;
+        window.renderDrinksChart = renderDrinksChart;
+        window.setScheduleFilter = setScheduleFilter;
+        window.toggleStarEvent = toggleStarEvent;
+        window.renderSchedule = renderSchedule;
 
         window.onload = function () {
             initEventScoresPlaceholder();
@@ -1406,6 +1736,8 @@
             renderEventSelector();
             loadActiveEvent();
             calculateArenaStandings();
+            renderDrinksChart();
+            renderSchedule();
 
             initAuthAndSync();
 
