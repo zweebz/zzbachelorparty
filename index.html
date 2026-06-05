@@ -416,12 +416,11 @@
                 <div id="leaderboard-list" class="space-y-3"></div>
 
                 <div class="mt-6 pt-4 border-t border-white/10 text-xs text-gray-400 space-y-2">
-                    <div class="flex justify-between font-mono text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                        <span>Event Points Scale</span>
-                        <span>Multipliers</span>
+                    <div class="font-mono text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                        Event Points Scale
                     </div>
 
-                    <div class="grid grid-cols-2 gap-1 text-[10px] font-mono">
+                    <div class="flex flex-col gap-1 text-[10px] font-mono">
                         <div>🥇 1st: <strong class="text-yellow-400">4 pts</strong></div>
                         <div>🥈 2nd: <strong class="text-gray-300">3 pts</strong></div>
                         <div>🥉 3rd: <strong class="text-amber-600">2 pts</strong></div>
@@ -526,16 +525,16 @@
         }
 
         const events = [
-            { id: "pool", name: "Pool (8-Ball)", icon: "🎱", weight: 1, key: "Pool (8-Ball) 🎱" },
-            { id: "air_hockey", name: "Air Hockey", icon: "🥏", weight: 1, key: "Air Hockey 🥏" },
-            { id: "foosball", name: "Foosball", icon: "⚽", weight: 1, key: "Foosball ⚽" },
-            { id: "darts", name: "Darts", icon: "🎯", weight: 1, key: "Darts 🎯" },
-            { id: "volleyball", name: "Volleyball", icon: "🏐", weight: 1, key: "Volleyball 🏐" },
-            { id: "beer_pong", name: "Beer Pong", icon: "🍺", weight: 1, key: "Beer Pong 🍺" },
-            { id: "flip_cup", name: "Flip Cup", icon: "🥤", weight: 1, key: "Flip Cup 🥤" },
-            { id: "cannonball", name: "Cannonball Contest", icon: "💣", weight: 1, key: "Cannonball Contest 💣" },
-            { id: "cornhole", name: "Cornhole", icon: "🌽", weight: 1, key: "Cornhole 🌽" },
-            { id: "smash", name: "Super Smash Bros.", icon: "🎮", weight: 1, key: "Super Smash Bros. 🎮" }
+            { id: "pool", name: "Pool (8-Ball)", shortName: "Pool", icon: "🎱", weight: 1, key: "Pool (8-Ball) 🎱" },
+            { id: "air_hockey", name: "Air Hockey", shortName: "Air Hockey", icon: "🥏", weight: 1, key: "Air Hockey 🥏" },
+            { id: "foosball", name: "Foosball", shortName: "Foos Ball", icon: "⚽", weight: 1, key: "Foosball ⚽" },
+            { id: "darts", name: "Darts", shortName: "Darts", icon: "🎯", weight: 1, key: "Darts 🎯" },
+            { id: "volleyball", name: "Volleyball", shortName: "Volley Ball", icon: "🏐", weight: 1, key: "Volleyball 🏐" },
+            { id: "beer_pong", name: "Beer Pong", shortName: "Beer Pong", icon: "🍺", weight: 1, key: "Beer Pong 🍺" },
+            { id: "flip_cup", name: "Flip Cup", shortName: "Flip Cup", icon: "🥤", weight: 1, key: "Flip Cup 🥤" },
+            { id: "cannonball", name: "Cannonball Contest", shortName: "Cannon Balls", icon: "💣", weight: 1, key: "Cannonball Contest 💣" },
+            { id: "cornhole", name: "Cornhole", shortName: "Corn Hole", icon: "🌽", weight: 1, key: "Cornhole 🌽" },
+            { id: "smash", name: "Super Smash Bros.", shortName: "Smash Bros.", icon: "🎮", weight: 1, key: "Super Smash Bros. 🎮" }
         ];
 
         let competitors = [
@@ -895,7 +894,7 @@
                 return `
                     <button onclick="selectEvent(${idx})" class="${bgClass} border-2 ${borderClass} rounded-xl p-3 flex flex-col items-center justify-center transition-all cursor-pointer hover:scale-105">
                         <span class="text-xl">${evt.icon}</span>
-                        <span class="text-[9px] font-mono font-bold uppercase truncate max-w-full text-center mt-1 block">${evt.name.split(" ")[0]}</span>
+                        <span class="text-[9px] font-mono font-bold uppercase max-w-full text-center mt-1 block leading-tight">${evt.shortName.replace(" ", "<br>")}</span>
                         ${isCompleted
                             ? `<span class="text-[8px] font-mono text-emerald-400 mt-0.5 block font-bold">✓ LOCKED</span>`
                             : `<span class="text-[8px] font-mono text-gray-500 mt-0.5 block">OPEN</span>`
