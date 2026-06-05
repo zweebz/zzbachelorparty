@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZZ Bachelor Cup 2026 - MSG Arena Tracker</title>
+    <title>ZZ Bachelor Cup - MSG Arena Tracker</title>
 
     <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -63,6 +63,10 @@
             --tw-gradient-to: #F58426 var(--tw-gradient-to-position);
         }
 
+        .bg-gradient-knicks {
+            background-image: linear-gradient(to right, #006BB6, #F58426);
+        }
+
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -116,7 +120,7 @@
             </div>
 
             <h1 class="font-arena text-4xl sm:text-6xl md:text-7xl tracking-tight knicks-orange drop-shadow-[0_4px_0_#006BB6] uppercase leading-tight">
-                ZZ BACHELOR CUP 2026
+                ZZ BACHELOR CUP
             </h1>
 
             <p class="text-gray-400 mt-3 max-w-2xl mx-auto font-medium text-xs sm:text-sm md:text-base tracking-wide">
@@ -484,19 +488,14 @@
                     </div>
                 </div>
 
-                <div id="modal-player-dietary-container" class="hidden bg-red-950/20 border border-red-500/10 p-3 rounded-lg">
-                    <span class="text-[10px] font-mono text-red-400 uppercase tracking-wider block font-bold">
-                        ⚠️ Commissioner Accommodations Required
-                    </span>
-                    <p id="modal-player-dietary" class="text-xs text-gray-300 font-mono mt-1"></p>
-                </div>
+
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="mt-12 text-center text-[11px] font-mono text-gray-600 border-t border-white/5 pt-6 max-w-7xl mx-auto w-full">
-        ZZ Bachelor Cup 2026. Built with pristine mathematical parity algorithms. All data synced in real time with Firebase Firestore.
+        ZZ Bachelor Cup. Built with pristine mathematical parity algorithms. All data synced in real time with Firebase Firestore.
     </footer>
 
     <!-- App Script -->
@@ -541,7 +540,7 @@
 
         let competitors = [
             {
-                name: "Evan Edgar",
+                name: "Evan",
                 team: "The OGs",
                 hydration: "🌊 Fluid Dynamics Specialist: I came here to drink, not to think.",
                 ratings: { pool: 5, air_hockey: 3, foosball: 4, darts: 5, volleyball: 5, beer_pong: 5, flip_cup: 5, cannonball: 3, cornhole: 5, smash: 2 },
@@ -551,7 +550,7 @@
                 dietary: "Salah, Alex, Sam F: No Pork. Explicit request for Oreos."
             },
             {
-                name: "Alex McKeen",
+                name: "Alex",
                 team: "The OGs",
                 hydration: "Steady Sipper: Pacing myself nicely to stay in optimal playing shape.",
                 ratings: { pool: 4, air_hockey: 2, foosball: 1, darts: 3, volleyball: 2, beer_pong: 4, flip_cup: 1, cannonball: 3, cornhole: 4, smash: 3 },
@@ -561,10 +560,10 @@
                 dietary: "No Pork."
             },
             {
-                name: "Salah Balawi",
+                name: "Salah",
                 team: "The OGs",
                 hydration: "Dedicated Athlete: Zero alcohol. 100% focused on holding the hardware.",
-                ratings: { pool: 3, air_hockey: 3, foosball: 2, darts: 3, volleyball: 2, beer_pong: 2, flip_cup: 1, cannonball: 3, cornhole: 3, smash: 2 },
+                ratings: { pool: 3, air_hockey: 3, foosball: 2, darts: 3, volleyball: 2, beer_pong: 3, flip_cup: 1, cannonball: 3, cornhole: 3, smash: 2 },
                 smash: "Casual",
                 alcohol: ["None (Sober Sniper)"],
                 nonAlcoholic: ["Sports Hydration", "Lemon-Lime Sodas", "Ginger Ale"],
@@ -584,7 +583,7 @@
                 name: "Stephan",
                 team: "The Harts",
                 hydration: "Social Drinker: Savoring cocktails but here to sweep categories.",
-                ratings: { pool: 5, air_hockey: 3, foosball: 2, darts: 1, volleyball: 5, beer_pong: 5, flip_cup: 3, cannonball: 3, cornhole: 4, smash: 3 },
+                ratings: { pool: 4, air_hockey: 3, foosball: 2, darts: 1, volleyball: 5, beer_pong: 5, flip_cup: 3, cannonball: 3, cornhole: 4, smash: 3 },
                 smash: "Comfortable",
                 alcohol: ["Light Beers", "Seltzers"],
                 nonAlcoholic: ["Ginger Ale", "Sports Hydration"],
@@ -611,7 +610,7 @@
                 dietary: "None."
             },
             {
-                name: "Zach Zweibel",
+                name: "Zach",
                 team: "The Brunsons",
                 hydration: "Steady Sipper: Pacing himself elegantly through the high-stakes matchups.",
                 ratings: { pool: 5, air_hockey: 3, foosball: 2, darts: 4, volleyball: 2, beer_pong: 4, flip_cup: 5, cannonball: 3, cornhole: 4, smash: 3 },
@@ -634,14 +633,14 @@
                 name: "David",
                 team: "The KATs",
                 hydration: "Social Drinker: Enjoys the celebration matches.",
-                ratings: { pool: 2, air_hockey: 4, foosball: 4, darts: 4, volleyball: 5, beer_pong: 5, flip_cup: 4, cannonball: 1, cornhole: 3, smash: 1 },
+                ratings: { pool: 2, air_hockey: 4, foosball: 4, darts: 4, volleyball: 5, beer_pong: 5, flip_cup: 4, cannonball: 1, cornhole: 3, smash: 2 },
                 smash: "Novice",
                 alcohol: ["Ciders", "Imported Beers"],
                 nonAlcoholic: ["Sports Hydration"],
                 dietary: "Keeps Kosher / Jewish Dietary Standards."
             },
             {
-                name: "Sam Fregly",
+                name: "Sam",
                 team: "The KATs",
                 hydration: "Dedicated Athlete: Zero alcohol. 100% focused on controllers.",
                 ratings: { pool: 4, air_hockey: 5, foosball: 3, darts: 1, volleyball: 4, beer_pong: 5, flip_cup: 3, cannonball: 1, cornhole: 4, smash: 4 },
@@ -651,7 +650,7 @@
                 dietary: "No Pork. Requested NA Beers at the store."
             },
             {
-                name: "Chris Owens",
+                name: "Cap",
                 team: "The KATs",
                 hydration: "Social Drinker: Keeps it balanced and fires up under pressure.",
                 ratings: { pool: 3, air_hockey: 3, foosball: 3, darts: 3, volleyball: 3, beer_pong: 3, flip_cup: 3, cannonball: 3, cornhole: 3, smash: 4 },
@@ -1306,11 +1305,6 @@
                         </div>
 
                         <div class="text-right flex items-center gap-4">
-                            <div class="hidden sm:block text-right">
-                                <span class="text-[8px] font-mono block text-gray-500 uppercase">Power</span>
-                                <span class="text-[10px] font-mono font-bold text-knicks-orange">${teamPower}</span>
-                            </div>
-
                             <div>
                                 <span class="text-[8px] font-mono block text-gray-500 uppercase">Points</span>
                                 <span class="font-arena text-xl text-white font-mono">${team.points.toFixed(1).replace(".0", "")}</span>
@@ -1329,25 +1323,12 @@
                 const meta = teamMetadata[teamName];
                 const teamPlayers = competitors.filter((c) => c.team === teamName);
 
-                const totalPower = teamPlayers.reduce((sum, p) => {
-                    return sum + Object.values(p.ratings).reduce((a, b) => a + b, 0);
-                }, 0);
-
-                const averageSmash = teamPlayers.map((p) => p.smash).join(" • ");
-
                 const playerRows = teamPlayers.map((p) => {
-                    const skillSum = Object.values(p.ratings).reduce((a, b) => a + b, 0);
-
                     return `
                         <div onclick="openPlayerModal('${p.name.replace(/'/g, "\\'")}')" class="group flex items-center justify-between bg-black/30 px-3 py-2.5 rounded-xl border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all cursor-pointer">
                             <div class="flex items-center gap-2">
                                 <span class="w-1.5 h-1.5 rounded-full bg-knicks-blue group-hover:bg-knicks-orange transition-all"></span>
                                 <span class="text-sm font-semibold text-gray-200">${p.name}</span>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-mono">
-                                <span class="text-gray-500">Smash: <strong class="text-gray-300 font-normal">${p.smash}</strong></span>
-                                <span class="bg-white/5 px-2.5 py-0.5 rounded text-knicks-orange font-bold group-hover:bg-white/10 transition-all">${skillSum}</span>
                             </div>
                         </div>
                     `;
@@ -1359,14 +1340,6 @@
                             <div class="flex items-start justify-between border-b border-white/5 pb-3 mb-4">
                                 <div>
                                     <h3 class="font-arena text-xl tracking-wide text-white">${teamName}</h3>
-                                    <span class="text-[10px] font-mono uppercase tracking-wider ${meta.badgeBg} px-2 py-0.5 rounded mt-1 inline-block">
-                                        Smash Meta: ${averageSmash}
-                                    </span>
-                                </div>
-
-                                <div class="text-right">
-                                    <span class="text-[10px] font-mono text-gray-400 block uppercase tracking-wider">Total Power</span>
-                                    <span class="font-arena text-2xl knicks-orange">${totalPower}</span>
                                 </div>
                             </div>
 
@@ -1406,9 +1379,7 @@
                 const score = player.ratings[evt.id] || 3;
                 const widthPercent = (score / 5) * 100;
 
-                let ratingColor = "bg-knicks-blue";
-                if (score >= 4.5) ratingColor = "bg-gradient-to-r from-knicks-blue to-knicks-orange";
-                else if (score >= 4.0) ratingColor = "bg-knicks-orange";
+                const ratingColor = "bg-gradient-knicks";
 
                 return `
                     <div class="space-y-0.5">
@@ -1434,14 +1405,7 @@
                 ? player.nonAlcoholic.map((na) => `<div class="font-mono text-[10px] text-gray-300">• ${na}</div>`).join("")
                 : `<span class="text-[10px] text-gray-500 italic">No non-alcoholic mixer preferences.</span>`;
 
-            const dietaryContainer = document.getElementById("modal-player-dietary-container");
 
-            if (player.dietary && player.dietary !== "None." && player.dietary !== "None") {
-                dietaryContainer.classList.remove("hidden");
-                document.getElementById("modal-player-dietary").innerText = player.dietary;
-            } else {
-                dietaryContainer.classList.add("hidden");
-            }
 
             document.getElementById("player-modal").classList.remove("hidden");
         }
