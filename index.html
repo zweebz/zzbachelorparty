@@ -122,6 +122,9 @@
             <h1 class="font-arena text-4xl sm:text-6xl md:text-7xl tracking-tight knicks-orange drop-shadow-[0_4px_0_#006BB6] uppercase leading-tight">
                 ZZ BACHELOR CUP
             </h1>
+            <div class="text-sm sm:text-base font-mono font-bold tracking-widest text-slate-300 mt-2">
+                6/12/26 - 6/14/26
+            </div>
 
             <p class="text-gray-400 mt-3 max-w-2xl mx-auto font-medium text-xs sm:text-sm md:text-base tracking-wide">
                 Welcome to The Garden. 4 Teams. 12 Competitors. 10 Championship Events.
@@ -207,18 +210,10 @@
                                     <h3 id="active-event-name" class="font-arena text-2xl text-white tracking-wide">
                                         Pool (8-Ball)
                                     </h3>
-
-                                    <span class="text-[10px] font-mono uppercase tracking-wider bg-white/5 text-gray-400 px-2 py-0.5 rounded" id="active-event-meta">
-                                        Standard Bracket • Weight 1.0x
-                                    </span>
                                 </div>
                             </div>
 
                             <div class="flex flex-wrap items-center gap-2">
-                                <button onclick="quickSimulate()" class="bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/10 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer">
-                                    🎲 Simulation Bot
-                                </button>
-
                                 <button onclick="resetActiveEvent()" class="bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer">
                                     🗑️ Reset Event
                                 </button>
@@ -532,7 +527,7 @@
             { id: "volleyball", name: "Volleyball", shortName: "Volley Ball", icon: "🏐", weight: 1, key: "Volleyball 🏐" },
             { id: "beer_pong", name: "Beer Pong", shortName: "Beer Pong", icon: "🍺", weight: 1, key: "Beer Pong 🍺" },
             { id: "flip_cup", name: "Flip Cup", shortName: "Flip Cup", icon: "🥤", weight: 1, key: "Flip Cup 🥤" },
-            { id: "cannonball", name: "Cannonball Contest", shortName: "Cannon Balls", icon: "💣", weight: 1, key: "Cannonball Contest 💣" },
+            { id: "cannonball", name: "Cannonball Contest", shortName: "Cannon Ball", icon: "💣", weight: 1, key: "Cannonball Contest 💣" },
             { id: "cornhole", name: "Cornhole", shortName: "Corn Hole", icon: "🌽", weight: 1, key: "Cornhole 🌽" },
             { id: "smash", name: "Super Smash Bros.", shortName: "Smash Bros.", icon: "🎮", weight: 1, key: "Super Smash Bros. 🎮" }
         ];
@@ -674,18 +669,38 @@
         let eventScores = {};
         let toastTimer = null;
 
+        function getEventSeeding(sportId) {
+            const teamSkills = teamNames.map((teamName) => {
+                const teamPlayers = competitors.filter((c) => c.team === teamName);
+                const totalSkill = teamPlayers.reduce((sum, c) => sum + (c.ratings[sportId] || 3), 0);
+                return { name: teamName, skill: totalSkill };
+            });
+
+            teamSkills.sort((a, b) => {
+                if (b.skill !== a.skill) return b.skill - a.skill;
+                return a.name.localeCompare(b.name);
+            });
+
+            return teamSkills.map(t => t.name);
+        }
+
+        function getDefaultEventScore(eventId) {
+            const seeds = getEventSeeding(eventId);
+            return {
+                completed: false,
+                matches: {
+                    sf1: { t1: seeds[0], t2: seeds[3], s1: 0, s2: 0 },
+                    sf2: { t1: seeds[1], t2: seeds[2], s1: 0, s2: 0 },
+                    third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
+                    finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
+                },
+                rankings: []
+            };
+        }
+
         function initEventScoresPlaceholder() {
             events.forEach((evt) => {
-                eventScores[evt.id] = {
-                    completed: false,
-                    matches: {
-                        sf1: { t1: "The OGs", t2: "The KATs", s1: 0, s2: 0 },
-                        sf2: { t1: "The Harts", t2: "The Brunsons", s1: 0, s2: 0 },
-                        third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
-                        finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
-                    },
-                    rankings: []
-                };
+                eventScores[evt.id] = getDefaultEventScore(evt.id);
             });
         }
 
@@ -762,16 +777,7 @@
         function ensureAllEventScoreSchemas() {
             events.forEach((evt) => {
                 if (!eventScores[evt.id]) {
-                    eventScores[evt.id] = {
-                        completed: false,
-                        matches: {
-                            sf1: { t1: "The OGs", t2: "The KATs", s1: 0, s2: 0 },
-                            sf2: { t1: "The Harts", t2: "The Brunsons", s1: 0, s2: 0 },
-                            third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
-                            finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
-                        },
-                        rankings: []
-                    };
+                    eventScores[evt.id] = getDefaultEventScore(evt.id);
                 }
             });
         }
@@ -917,7 +923,7 @@
 
             document.getElementById("active-event-icon").innerText = currentEvent.icon;
             document.getElementById("active-event-name").innerText = currentEvent.name;
-            document.getElementById("active-event-meta").innerText = `Bracket Weight: ${currentEvent.weight}x • Form Key: "${currentEvent.key}"`;
+
 
             const populateOptions = (selectElem, selectedVal) => {
                 if (!selectElem) return;
@@ -1140,16 +1146,7 @@
             const confirmed = window.confirm(`Reset all scores for ${currentEvent.name}? This will update the live standings for everyone.`);
             if (!confirmed) return;
 
-            eventScores[currentEvent.id] = {
-                completed: false,
-                matches: {
-                    sf1: { t1: "The OGs", t2: "The KATs", s1: 0, s2: 0 },
-                    sf2: { t1: "The Harts", t2: "The Brunsons", s1: 0, s2: 0 },
-                    third: { t1: "SF1 Loser", t2: "SF2 Loser", s1: 0, s2: 0 },
-                    finals: { t1: "SF1 Winner", t2: "SF2 Winner", s1: 0, s2: 0 }
-                },
-                rankings: []
-            };
+            eventScores[currentEvent.id] = getDefaultEventScore(currentEvent.id);
 
             loadActiveEvent();
 
@@ -1158,61 +1155,7 @@
             });
         }
 
-        function quickSimulate() {
-            const currentEvent = events[activeEventIndex];
-            const data = eventScores[currentEvent.id];
 
-            const getTeamSkill = (teamName, sportId) => {
-                const teamCompetitors = competitors.filter((c) => c.team === teamName);
-                return teamCompetitors.reduce((sum, c) => sum + (c.ratings[sportId] || 3), 0);
-            };
-
-            const runMatch = (s1, s2) => {
-                const total = Math.max(1, s1 + s2);
-                const r = Math.random() * total;
-
-                let score1 = Math.floor(Math.random() * 3) + (r < s1 ? 3 : 0);
-                let score2 = Math.floor(Math.random() * 3) + (r >= s1 ? 3 : 0);
-
-                if (score1 === score2) {
-                    if (Math.random() > 0.5) score1 += 1;
-                    else score2 += 1;
-                }
-
-                return [score1, score2];
-            };
-
-            const t1 = data.matches.sf1.t1;
-            const t2 = data.matches.sf1.t2;
-            const t3 = data.matches.sf2.t1;
-            const t4 = data.matches.sf2.t2;
-
-            const [sf1Score1, sf1Score2] = runMatch(getTeamSkill(t1, currentEvent.id), getTeamSkill(t2, currentEvent.id));
-            const [sf2Score1, sf2Score2] = runMatch(getTeamSkill(t3, currentEvent.id), getTeamSkill(t4, currentEvent.id));
-
-            document.getElementById("sf1-s1").value = sf1Score1;
-            document.getElementById("sf1-s2").value = sf1Score2;
-            document.getElementById("sf2-s1").value = sf2Score1;
-            document.getElementById("sf2-s2").value = sf2Score2;
-
-            recalculateNodePaths();
-
-            const winnerSF1 = sf1Score1 > sf1Score2 ? t1 : t2;
-            const loserSF1 = sf1Score1 > sf1Score2 ? t2 : t1;
-            const winnerSF2 = sf2Score1 > sf2Score2 ? t3 : t4;
-            const loserSF2 = sf2Score1 > sf2Score2 ? t4 : t3;
-
-            const [thirdScore1, thirdScore2] = runMatch(getTeamSkill(loserSF1, currentEvent.id), getTeamSkill(loserSF2, currentEvent.id));
-            const [finalScore1, finalScore2] = runMatch(getTeamSkill(winnerSF1, currentEvent.id), getTeamSkill(winnerSF2, currentEvent.id));
-
-            document.getElementById("third-s1").value = thirdScore1;
-            document.getElementById("third-s2").value = thirdScore2;
-            document.getElementById("finals-s1").value = finalScore1;
-            document.getElementById("finals-s2").value = finalScore2;
-
-            showToast(`🎲 Simulated ${currentEvent.name} based on competitor ratings.`);
-            updateLiveMatchScores();
-        }
 
         function calculateArenaStandings() {
             const standings = {
@@ -1274,26 +1217,27 @@
             if (!container) return;
 
             container.innerHTML = sorted.map((team, idx) => {
+                const tiedTeams = sorted.filter(t => t.points === team.points);
+                const isTied = tiedTeams.length > 1;
+                const firstIdx = sorted.findIndex(t => t.points === team.points);
+                const rankText = isTied ? `Tied for #${firstIdx + 1}` : `#${idx + 1}`;
+
                 let rankColor = "text-gray-400";
-                if (idx === 0) rankColor = "text-yellow-400";
-                if (idx === 1) rankColor = "text-gray-300";
-                if (idx === 2) rankColor = "text-amber-600";
+                const displayRankIdx = isTied ? firstIdx : idx;
+                if (displayRankIdx === 0) rankColor = "text-yellow-400";
+                else if (displayRankIdx === 1) rankColor = "text-gray-300";
+                else if (displayRankIdx === 2) rankColor = "text-amber-600";
 
                 const meta = teamMetadata[team.name] || { hex: "#fff" };
                 const teamPlayers = competitors.filter((c) => c.team === team.name);
                 const firstNames = teamPlayers.map((p) => p.name.split(" ")[0]).join(" • ");
-
-                const teamPower = teamPlayers.reduce((sum, player) => {
-                    const skillSum = Object.values(player.ratings).reduce((a, b) => a + b, 0);
-                    return sum + skillSum;
-                }, 0);
 
                 return `
                     <div class="flex items-center justify-between bg-slate-900/80 border border-white/5 p-3 rounded-xl shadow-md relative overflow-hidden transition-all hover:border-white/10">
                         <div class="absolute left-0 top-0 bottom-0 w-1" style="background-color: ${meta.hex}"></div>
 
                         <div class="flex items-center gap-3 pl-1">
-                            <span class="font-arena text-sm ${rankColor} w-4 text-center">#${idx + 1}</span>
+                            <span class="font-arena text-[10px] sm:text-xs ${rankColor} text-center min-w-[4.5rem] sm:min-w-[5rem] whitespace-nowrap">${rankText}</span>
 
                             <div>
                                 <p class="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
@@ -1441,7 +1385,7 @@
         window.updateLiveMatchScores = updateLiveMatchScores;
         window.calculateEventRanks = calculateEventRanks;
         window.resetActiveEvent = resetActiveEvent;
-        window.quickSimulate = quickSimulate;
+
         window.filterTeams = filterTeams;
         window.openPlayerModal = openPlayerModal;
         window.closePlayerModal = closePlayerModal;
