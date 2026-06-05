@@ -139,30 +139,32 @@
         </div>
     </header>
 
+    <!-- Sticky Navigation Bar -->
+    <div class="max-w-7xl w-full mx-auto px-4 mt-6">
+        <div class="sticky top-4 z-40 bg-slate-900/80 p-1.5 rounded-xl border border-white/5 flex flex-wrap gap-1 shadow-lg backdrop-blur-md">
+            <button onclick="switchTab('teams')" id="tab-btn-teams" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 bg-knicks-blue text-white shadow-md">
+                🏆 TEAMS &amp; ROSTERS
+            </button>
+
+            <button onclick="switchTab('scoring')" id="tab-btn-scoring" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                ⚔️ EVENTS &amp; BRACKETS
+            </button>
+
+            <button onclick="switchTab('drinks')" id="tab-btn-drinks" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                🍹 DRINK PREFS
+            </button>
+
+            <button onclick="switchTab('schedule')" id="tab-btn-schedule" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                📺 TV SCHEDULE
+            </button>
+        </div>
+    </div>
+
     <!-- Main Live Workspace -->
-    <main class="max-w-7xl w-full mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
+    <main class="max-w-7xl w-full mx-auto px-4 mt-4 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-grow">
 
         <!-- Left Workstation -->
         <div class="lg:col-span-2 space-y-6">
-
-            <!-- Tabs -->
-            <div class="sticky top-4 z-40 bg-slate-900/80 p-1.5 rounded-xl border border-white/5 flex flex-wrap gap-1 shadow-lg backdrop-blur-md">
-                <button onclick="switchTab('teams')" id="tab-btn-teams" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 bg-knicks-blue text-white shadow-md">
-                    🏆 TEAMS &amp; ROSTERS
-                </button>
-
-                <button onclick="switchTab('scoring')" id="tab-btn-scoring" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
-                    ⚔️ EVENTS &amp; BRACKETS
-                </button>
-
-                <button onclick="switchTab('drinks')" id="tab-btn-drinks" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
-                    🍹 DRINK PREFS
-                </button>
-
-                <button onclick="switchTab('schedule')" id="tab-btn-schedule" class="tab-btn flex-1 min-w-[120px] text-center py-3 px-4 rounded-lg font-arena text-xs tracking-wider transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
-                    📺 TV SCHEDULE
-                </button>
-            </div>
 
             <!-- Toast -->
             <div id="toast-box" class="hidden bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 p-4 rounded-xl flex items-center justify-between transition-all duration-300">
